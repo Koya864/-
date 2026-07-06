@@ -6,423 +6,442 @@
 <title>Life Shift Select — 画面プロトタイプ</title>
 <style>
   :root{
-    --bg:#FAFAF8; --surface:#FFFFFF; --ink:#1B1B18; --sub:#6F6E66;
-    --accent:#1E4D3B; --accent-soft:#EDF3EF; --line:#E8E6DF;
-    --hold:#9A6B15; --hold-bg:#FBF3E3; --ok:#1E6B45; --ok-bg:#E9F4EC;
-    --danger:#8C3A2E;
-    --radius:16px; --radius-s:10px;
-    --shadow:0 1px 2px rgba(27,27,24,.04), 0 8px 24px rgba(27,27,24,.06);
+    --navy:#13253C; --navy-deep:#0C1828; --navy-ink:#1C2E44;
+    --gold:#B08D4F; --gold-bright:#C8A662; --gold-soft:#F3EBDB;
+    --bg:#F7F5F0; --paper:#FFFFFF; --ink:#25303D; --sub:#6E7883; --line:#E4E0D6;
+    --hold:#9A6B15; --hold-bg:#FBF3E0; --ok:#2E6B4A; --ok-bg:#EAF3ED; --danger:#8C3A2E;
+    --serif:"Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP","Times New Roman",serif;
+    --sans:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI","Meiryo",sans-serif;
+    --shadow:0 1px 2px rgba(18,29,44,.05), 0 10px 30px rgba(18,29,44,.08);
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{-webkit-text-size-adjust:100%}
-  body{
-    background:var(--bg); color:var(--ink);
-    font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI","Meiryo",sans-serif;
-    font-size:15px; line-height:1.75; font-feature-settings:"palt";
-  }
-  img{max-width:100%}
+  body{background:var(--bg); color:var(--ink); font-family:var(--sans); font-size:15px; line-height:1.8; font-feature-settings:"palt"}
   a{color:inherit}
   button{font:inherit; cursor:pointer}
   input,select,textarea{font:inherit; color:inherit}
-  :focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  :focus-visible{outline:2px solid var(--gold); outline-offset:2px}
   @media (prefers-reduced-motion: reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 
-  /* ---------- プロトタイプ切替バー（製品外のクローム） ---------- */
+  /* ---------- プロトタイプ切替バー ---------- */
   .proto-bar{
-    position:sticky; top:0; z-index:100; background:#1B1B18; color:#F2F1EC;
+    position:sticky; top:0; z-index:100; background:#0A1220; color:#EDE9DF;
     display:flex; align-items:center; gap:16px; padding:0 16px;
     font-size:12px; overflow-x:auto; white-space:nowrap; scrollbar-width:none;
   }
   .proto-bar::-webkit-scrollbar{display:none}
-  .proto-bar .label{opacity:.55; letter-spacing:.08em; padding:10px 0}
+  .proto-bar .label{opacity:.5; letter-spacing:.08em; padding:10px 0}
   .proto-bar nav{display:flex; gap:4px}
   .proto-bar button{
-    background:none; border:0; color:#F2F1EC; opacity:.6; padding:12px 12px;
+    background:none; border:0; color:#EDE9DF; opacity:.55; padding:12px;
     border-bottom:2px solid transparent; letter-spacing:.04em;
   }
-  .proto-bar button.on{opacity:1; border-bottom-color:#7FB69A}
+  .proto-bar button.on{opacity:1; border-bottom-color:var(--gold-bright)}
 
   .screen{display:none}
   .screen.on{display:block; animation:fade .25s ease}
   @keyframes fade{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:none}}
+  .wrap{max-width:1140px; margin:0 auto; padding:0 22px}
 
-  .wrap{max-width:1080px; margin:0 auto; padding:0 20px}
-
-  /* ---------- 共通コンポーネント ---------- */
+  /* ---------- 共通 ---------- */
   .btn{
     display:inline-flex; align-items:center; justify-content:center; gap:8px;
-    border:0; border-radius:999px; padding:13px 28px; font-weight:600; font-size:14px;
-    background:var(--accent); color:#fff; transition:opacity .15s; white-space:nowrap;
+    border:0; border-radius:3px; padding:13px 26px; font-weight:600; font-size:13.5px;
+    letter-spacing:.08em; background:var(--navy); color:#fff; transition:opacity .15s; white-space:nowrap;
   }
   .btn:hover{opacity:.88}
-  .btn.ghost{background:transparent; color:var(--ink); border:1px solid var(--line)}
-  .btn.ghost:hover{border-color:var(--ink); opacity:1}
-  .btn.sm{padding:8px 18px; font-size:13px}
+  .btn.gold{background:var(--gold); color:#fff}
+  .btn.ghost{background:transparent; color:var(--navy); border:1px solid #C9CDD3}
+  .btn.ghost:hover{border-color:var(--navy); opacity:1}
+  .btn.ghost-gold{background:transparent; color:var(--gold); border:1px solid var(--gold)}
+  .btn.sm{padding:8px 16px; font-size:12.5px}
   .btn.hold{background:var(--hold)}
-  .btn.danger-ghost{background:transparent; color:var(--danger); border:1px solid var(--line)}
+  .btn.danger-ghost{background:transparent; color:var(--danger); border:1px solid #C9CDD3}
   .btn:disabled{opacity:.35; cursor:default}
+  .arrow::after{content:"→"; font-family:var(--sans)}
 
-  .badge{
-    display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:600;
-    letter-spacing:.06em; padding:4px 10px; border-radius:6px;
+  h1,h2,h3,.serif{font-family:var(--serif); font-weight:600; letter-spacing:.06em}
+  .kicker{font-size:11px; letter-spacing:.3em; color:var(--gold); font-weight:600}
+  h2.sec{font-size:24px; margin-top:8px; text-wrap:balance; color:var(--navy-ink)}
+  .sec-lead{font-size:13px; color:var(--sub); margin-top:6px}
+  .num{font-variant-numeric:tabular-nums}
+
+  .badge-new{
+    position:absolute; top:0; left:0; z-index:2; background:var(--gold); color:#fff;
+    font-size:10px; font-weight:700; letter-spacing:.2em; padding:5px 12px 5px 14px;
   }
-  .badge.rank{background:rgba(20,20,18,.82); color:#fff; backdrop-filter:blur(4px)}
-  .badge.rank .s{color:#D8C692}
-  .st{display:inline-block; font-size:11px; font-weight:600; letter-spacing:.05em; padding:3px 10px; border-radius:999px}
+  .badge-rank{
+    display:inline-flex; align-items:center; gap:6px; border:1px solid var(--gold);
+    color:var(--gold); font-size:11px; font-weight:600; letter-spacing:.14em; padding:3px 10px;
+    font-family:var(--serif); background:rgba(255,255,255,.92);
+  }
+  .badge-rank.on-photo{position:absolute; left:14px; bottom:14px; z-index:2}
+  .st{display:inline-block; font-size:11px; font-weight:600; letter-spacing:.05em; padding:3px 11px; border-radius:2px}
   .st.pub{background:var(--ok-bg); color:var(--ok)}
-  .st.rev{background:#EEF0F4; color:#4A566B}
+  .st.rev{background:#EDF0F4; color:#46586F}
   .st.hold{background:var(--hold-bg); color:var(--hold)}
-  .st.sold{background:#F0EFEA; color:var(--sub)}
+  .st.sold{background:#EFEDE6; color:var(--sub)}
+  .metric{font-size:12px; color:var(--gold); font-weight:600; letter-spacing:.04em}
 
-  .metric{font-size:12px; color:var(--accent); font-weight:600}
-  .kicker{font-size:11px; letter-spacing:.22em; color:var(--sub); font-weight:600; text-transform:uppercase}
-  h2.sec{font-size:22px; font-weight:600; letter-spacing:.02em; margin-top:6px; text-wrap:balance}
-  .num{font-variant-numeric:tabular-nums; font-family:"Helvetica Neue",Arial,"Hiragino Sans",sans-serif}
-
-  /* CSSによる抽象「建築フォト」 */
-  .ph{position:relative; overflow:hidden; background:#ccc}
-  .ph::after{
-    content:""; position:absolute; inset:0;
-    background:
-      repeating-linear-gradient(90deg, rgba(255,255,255,.07) 0 2px, transparent 2px 46px),
-      repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 2px, transparent 2px 34px);
-  }
-  .ph.a{background:linear-gradient(160deg,#31404f 0%,#6d7f8e 45%,#c8b8a0 100%)}
-  .ph.b{background:linear-gradient(150deg,#EAE0CE 0%,#CBA47C 60%,#8A5F3C 100%)}
-  .ph.c{background:linear-gradient(160deg,#A3B7A5 0%,#5D7A63 60%,#2F4A3A 100%)}
-  .ph.d{background:linear-gradient(170deg,#D3DBE1 0%,#8FA3B5 55%,#4D6274 100%)}
-  .ph.e{background:linear-gradient(140deg,#F0ECE4 0%,#D8CFC0 55%,#A29883 100%)}
-  .ph.f{background:linear-gradient(165deg,#232B36 0%,#415061 55%,#9A8C7C 100%)}
+  /* SVGシーン（実写差し替え前提のプレースホルダ） */
+  .ph{position:relative; overflow:hidden; background-size:cover; background-position:center}
+  .ph.city-dusk{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600' preserveAspectRatio='xMidYMid slice'><defs><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%231b2d44'/><stop offset='.55' stop-color='%237e94aa'/><stop offset='1' stop-color='%23dfc7a0'/></linearGradient><linearGradient id='f' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23473827'/><stop offset='1' stop-color='%23151009'/></linearGradient></defs><rect width='1200' height='445' fill='url(%23s)'/><path fill='%23566e8a' opacity='.55' d='M0 445 V300 h70 v-60 h50 v60 h60 V240 h55 v205 h70 V190 h60 v255 h80 V270 h50 v175 h90 V210 h65 v235 h75 V250 h60 v195 h90 V180 h70 v265 h95 V290 h60 v155 h100 V230 h50 v215 z'/><path fill='%23233850' d='M0 445 V345 h90 v-85 h60 v85 h80 V255 h70 v190 h100 V305 h80 v140 h110 V225 h75 v220 h120 V335 h70 v110 h130 V275 h80 v170 h135 v-90 h40 v90 z'/><rect y='445' width='1200' height='155' fill='url(%23f)'/><rect y='445' width='1200' height='26' fill='%238fa3b8' opacity='.14'/><g fill='%230d1420'><rect x='386' width='24' height='452'/><rect x='788' width='24' height='452'/><rect y='438' width='1200' height='14'/></g></svg>")}
+  .ph.city-day{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600' preserveAspectRatio='xMidYMid slice'><defs><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23a9c2d6'/><stop offset='.7' stop-color='%23e3ddd0'/><stop offset='1' stop-color='%23d6cbb8'/></linearGradient></defs><rect width='800' height='600' fill='url(%23s)'/><path fill='%23718499' opacity='.5' d='M0 470 V340 h55 v-50 h45 v50 h55 V280 h50 v190 h60 V240 h55 v230 h70 V300 h45 v170 h70 V250 h55 v220 h65 V310 h50 v160 h75 V270 h50 v200 z'/><path fill='%233c526b' d='M0 470 V390 h70 v-70 h55 v70 h75 V310 h60 v160 h85 V350 h70 v120 h95 V290 h65 v180 h100 V370 h60 v100 h65 v-60 h40 v190 H0 z'/><rect y='470' width='800' height='130' fill='%232c3c4e'/></svg>")}
+  .ph.interior{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600' preserveAspectRatio='xMidYMid slice'><defs><linearGradient id='w' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23ece2d1'/><stop offset='1' stop-color='%23cbb494'/></linearGradient><linearGradient id='v' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23b9cdd9'/><stop offset='1' stop-color='%23e6d9bf'/></linearGradient><linearGradient id='fl' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23a58055'/><stop offset='1' stop-color='%23624a2f'/></linearGradient></defs><rect width='800' height='430' fill='url(%23w)'/><rect x='90' y='60' width='420' height='330' fill='url(%23v)'/><path fill='%236c8098' opacity='.6' d='M90 390 V300 h50 v-45 h40 v45 h55 V260 h45 v130 h60 V240 h50 v150 h65 V285 h45 v105 h50 v-70 h40 v70 z'/><g fill='%23e7e0d2'><rect x='294' y='60' width='14' height='330'/><rect x='90' y='218' width='420' height='12'/></g><rect x='84' y='54' width='432' height='8' fill='%23d9cfba'/><rect y='430' width='800' height='170' fill='url(%23fl)'/><rect x='540' y='300' width='190' height='130' rx='8' fill='%23d8cdbb'/><rect x='540' y='412' width='190' height='18' rx='6' fill='%23b3a48c'/><rect y='430' width='800' height='22' fill='%23ffffff' opacity='.12'/></svg>")}
+  .ph.city-night{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 700' preserveAspectRatio='xMidYMid slice'><defs><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%230d1a2b'/><stop offset='1' stop-color='%233c5068'/></linearGradient></defs><rect width='600' height='700' fill='url(%23s)'/><path fill='%23091220' d='M0 700 V330 h70 v-70 h55 v70 h70 V240 h60 v460 z M290 700 V300 h75 v-80 h60 v80 h70 V380 h55 v320 z'/><g fill='%23d8b878' opacity='.85'><rect x='20' y='360' width='10' height='7'/><rect x='45' y='390' width='10' height='7'/><rect x='20' y='430' width='10' height='7'/><rect x='85' y='300' width='9' height='6'/><rect x='108' y='330' width='9' height='6'/><rect x='85' y='370' width='9' height='6'/><rect x='150' y='270' width='9' height='6'/><rect x='172' y='310' width='9' height='6'/><rect x='150' y='350' width='9' height='6'/><rect x='310' y='340' width='10' height='7'/><rect x='340' y='380' width='10' height='7'/><rect x='310' y='430' width='10' height='7'/><rect x='378' y='250' width='9' height='6'/><rect x='402' y='290' width='9' height='6'/><rect x='378' y='340' width='9' height='6'/><rect x='470' y='420' width='10' height='7'/><rect x='500' y='460' width='10' height='7'/></g></svg>")}
+  .ph.green{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 700' preserveAspectRatio='xMidYMid slice'><defs><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23b8c9c2'/><stop offset='1' stop-color='%234f6a5a'/></linearGradient></defs><rect width='600' height='700' fill='url(%23s)'/><path fill='%23516c7d' opacity='.5' d='M0 480 V330 h60 v-60 h50 v60 h70 V280 h55 v200 h75 V250 h60 v230 h80 V310 h55 v170 h95 z'/><circle cx='120' cy='500' r='90' fill='%232e4a38' opacity='.85'/><circle cx='250' cy='540' r='110' fill='%23223b2c'/><circle cx='430' cy='510' r='95' fill='%232e4a38' opacity='.9'/><circle cx='540' cy='560' r='100' fill='%23223b2c'/><rect y='620' width='600' height='80' fill='%231a2c21'/></svg>")}
 
   .toast{
     position:fixed; left:50%; bottom:28px; transform:translateX(-50%) translateY(20px);
-    background:#1B1B18; color:#fff; padding:12px 22px; border-radius:999px; font-size:13px;
+    background:var(--navy-deep); color:#fff; padding:12px 24px; border-radius:2px; font-size:13px;
     opacity:0; pointer-events:none; transition:.25s; z-index:200; max-width:90vw; text-align:center;
+    border-left:3px solid var(--gold);
   }
   .toast.show{opacity:1; transform:translateX(-50%)}
 
-  /* ---------- サイトヘッダー / フッター ---------- */
-  .site-head{
-    background:var(--surface); border-bottom:1px solid var(--line);
-    position:sticky; top:38px; z-index:50;
+  /* ---------- サイトヘッダー ---------- */
+  .site-head{background:var(--paper); border-bottom:1px solid var(--line); position:sticky; top:38px; z-index:50}
+  .site-head .wrap{display:flex; align-items:center; gap:26px; height:70px}
+  .brand{display:flex; align-items:center; gap:12px; cursor:pointer; white-space:nowrap}
+  .monogram{
+    flex:none; width:42px; height:42px; background:var(--navy); color:var(--gold-bright);
+    font-family:var(--serif); font-size:17px; letter-spacing:.02em;
+    display:flex; align-items:center; justify-content:center;
   }
-  .site-head .wrap{display:flex; align-items:center; gap:28px; height:64px}
-  .wordmark{font-size:14px; font-weight:600; letter-spacing:.28em; white-space:nowrap}
-  .wordmark em{font-style:normal; color:var(--accent)}
-  .site-head nav{display:flex; gap:22px; margin-left:auto; align-items:center; font-size:13px}
-  .site-head nav a{text-decoration:none; color:var(--sub); white-space:nowrap}
-  .site-head nav a:hover{color:var(--ink)}
-  @media(max-width:720px){.site-head nav a.hide-m{display:none}}
-  @media(max-width:480px){
-    .site-head .wrap{gap:14px}
-    .site-head nav{gap:14px}
+  .brand .t .n{font-family:var(--serif); font-size:15px; letter-spacing:.18em; color:var(--navy-ink); line-height:1.3}
+  .brand .t .tg{font-size:10px; color:var(--sub); letter-spacing:.1em}
+  .site-head nav{display:flex; gap:24px; margin-left:auto; align-items:center; font-size:13px}
+  .site-head nav a{text-decoration:none; color:var(--ink); white-space:nowrap; letter-spacing:.06em}
+  .site-head nav a:hover{color:var(--gold)}
+  .site-head nav a.btn{color:#fff}
+  .site-head nav a.btn:hover{color:#fff}
+  @media(max-width:860px){.site-head nav a.hide-m{display:none}}
+  @media(max-width:520px){
+    .site-head .wrap{gap:12px; height:60px}
+    .site-head nav{gap:10px}
     .site-head nav a:not(.btn){display:none}
-    .wordmark{font-size:12px; letter-spacing:.18em}
-    .site-head .btn.sm{padding:8px 14px; font-size:12px}
+    .brand .t .tg{display:none}
+    .monogram{width:36px; height:36px; font-size:14px}
+    .site-head .btn.sm{padding:8px 12px; font-size:11.5px}
   }
 
-  .site-foot{border-top:1px solid var(--line); margin-top:96px; padding:48px 0 64px; font-size:12px; color:var(--sub)}
-  .site-foot .wrap{display:flex; flex-direction:column; gap:10px}
-  .site-foot .links{display:flex; gap:20px; flex-wrap:wrap}
+  /* ---------- フッター ---------- */
+  .site-foot{background:var(--navy-deep); color:#B9C2CE; margin-top:110px; padding:56px 0 64px; font-size:12px}
+  .site-foot .brand .t .n{color:#fff}
+  .site-foot .brand .t .tg{color:#8B97A6}
+  .site-foot .links{display:flex; gap:22px; flex-wrap:wrap; margin-top:18px}
   .site-foot a{text-decoration:none}
+  .site-foot a:hover{color:#fff}
+  .site-foot .legal{margin-top:18px; padding-top:18px; border-top:1px solid rgba(255,255,255,.12); opacity:.75}
 
   /* ---------- TOP ---------- */
-  .hero{position:relative; height:min(72vh,560px); min-height:420px; display:flex; align-items:flex-end}
+  .hero{position:relative; min-height:560px; display:flex; align-items:center}
   .hero .ph-bg{position:absolute; inset:0}
-  .hero .veil{position:absolute; inset:0; background:linear-gradient(180deg, rgba(20,22,20,.05) 30%, rgba(20,22,20,.55) 100%)}
-  .hero .inner{position:relative; width:100%; padding-bottom:56px; color:#fff}
-  .hero h1{font-size:clamp(26px,4.6vw,42px); font-weight:500; letter-spacing:.12em; line-height:1.5; text-wrap:balance; text-shadow:0 1px 24px rgba(0,0,0,.25)}
-  .hero p{margin-top:12px; font-size:14px; opacity:.92; letter-spacing:.04em}
-  .search{
-    margin-top:28px; background:rgba(255,255,255,.96); border-radius:14px; box-shadow:var(--shadow);
-    display:flex; gap:8px; padding:8px; max-width:640px; color:var(--ink);
+  .hero .veil{position:absolute; inset:0; background:linear-gradient(92deg, rgba(8,14,24,.82) 0%, rgba(8,14,24,.45) 42%, rgba(8,14,24,.05) 75%)}
+  .hero .inner{position:relative; width:100%; padding-top:70px; padding-bottom:130px; color:#fff}
+  .hero h1{font-size:clamp(30px,4.8vw,46px); line-height:1.6; letter-spacing:.1em; text-wrap:balance; text-shadow:0 2px 30px rgba(0,0,0,.35)}
+  .hero .lead{margin-top:22px; font-size:14.5px; letter-spacing:.14em; line-height:2.1; opacity:.95}
+  .hero .btn{margin-top:30px; padding:15px 30px}
+
+  .search-band{position:relative; z-index:5; margin-top:-72px}
+  .search-card{
+    background:var(--paper); box-shadow:var(--shadow); border:1px solid var(--line);
+    display:grid; grid-template-columns:1.2fr 1fr; gap:0;
   }
-  .search input{flex:1; min-width:0; border:0; background:none; padding:10px 14px; font-size:14px}
-  .search input:focus{outline:none}
-  .search select{border:0; background:none; font-size:13px; color:var(--sub); padding:0 6px}
-  @media(max-width:560px){.search select{display:none}}
-
-  .cert-strip{background:var(--surface); border-bottom:1px solid var(--line)}
-  .cert-strip .wrap{display:flex; gap:24px; align-items:center; padding:34px 20px}
-  .cert-mark{
-    flex:none; width:64px; height:64px; border-radius:50%; border:1px solid var(--accent);
-    display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--accent);
-    font-size:9px; letter-spacing:.12em; gap:2px;
+  @media(max-width:920px){.search-card{grid-template-columns:1fr}}
+  .search-left{padding:28px 30px; border-right:1px solid var(--line)}
+  @media(max-width:920px){.search-left{border-right:0; border-bottom:1px solid var(--line)}}
+  .search-left .ttl{font-size:13px; font-weight:700; letter-spacing:.14em; margin-bottom:14px; color:var(--navy-ink)}
+  .search-row{display:flex; gap:10px; flex-wrap:wrap}
+  .search-row select{
+    flex:1; min-width:130px; border:1px solid var(--line); background:#FBFAF7; padding:12px 14px; font-size:13px; color:var(--ink);
   }
-  .cert-mark b{font-size:15px; letter-spacing:.06em}
-  .cert-strip p{font-size:13px; color:var(--sub); max-width:56ch}
-  .cert-strip a{color:var(--accent); font-weight:600; text-decoration:none; font-size:13px; white-space:nowrap; margin-left:auto}
-  @media(max-width:720px){.cert-strip a{display:none}}
+  .usp{display:flex; flex-direction:column; justify-content:center; gap:16px; padding:24px 30px}
+  .usp .u{display:flex; gap:14px; align-items:flex-start}
+  .usp .ic{flex:none; width:34px; height:34px; color:var(--gold)}
+  .usp .u b{font-size:13px; letter-spacing:.08em; color:var(--navy-ink)}
+  .usp .u p{font-size:11.5px; color:var(--sub); line-height:1.7}
 
-  section.block{padding-top:72px}
-  .sec-head{display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:24px}
-  .sec-head .more{font-size:13px; color:var(--sub); text-decoration:none}
+  section.block{padding-top:88px}
+  .sec-head{display:flex; align-items:flex-end; justify-content:space-between; gap:20px; margin-bottom:30px}
+  .sec-head .more{font-size:12.5px; color:var(--navy-ink); text-decoration:none; letter-spacing:.08em; white-space:nowrap}
+  .sec-head .more:hover{color:var(--gold)}
 
-  .cards{display:grid; grid-template-columns:1fr; gap:24px}
+  /* 評価基準 */
+  .criteria{display:grid; grid-template-columns:repeat(5,1fr); background:var(--paper); border:1px solid var(--line)}
+  @media(max-width:920px){.criteria{grid-template-columns:repeat(2,1fr)}
+    .criteria .c:last-child{grid-column:1/-1}}
+  .criteria .c{padding:30px 18px; text-align:center; border-right:1px solid var(--line)}
+  .criteria .c:last-child{border-right:0}
+  @media(max-width:920px){.criteria .c{border-bottom:1px solid var(--line)}}
+  .criteria .ic{width:38px; height:38px; margin:0 auto 12px; color:var(--gold)}
+  .criteria .n{font-size:13px; font-weight:700; letter-spacing:.1em; color:var(--navy-ink)}
+  .criteria .v{font-family:var(--serif); font-size:26px; color:var(--navy); margin-top:4px}
+  .criteria .v small{font-size:12px; letter-spacing:.08em}
+
+  /* エリアカード */
+  .areas{display:grid; grid-template-columns:repeat(2,1fr); gap:16px}
+  @media(min-width:820px){.areas{grid-template-columns:repeat(4,1fr)}}
+  .area-card{position:relative; aspect-ratio:3/4; overflow:hidden; cursor:pointer; color:#fff; display:flex; align-items:flex-end}
+  .area-card .ph{position:absolute; inset:0; transition:transform .4s ease}
+  .area-card:hover .ph{transform:scale(1.04)}
+  .area-card .sh{position:absolute; inset:0; background:linear-gradient(180deg, rgba(10,17,28,.06) 40%, rgba(10,17,28,.75) 100%)}
+  .area-card .t{position:relative; padding:18px; width:100%}
+  .area-card .t b{font-family:var(--serif); font-size:16px; letter-spacing:.12em; display:block}
+  .area-card .t span{font-size:11px; opacity:.85; letter-spacing:.06em}
+  .area-card .t .lk{display:block; margin-top:8px; font-size:11px; color:var(--gold-bright); letter-spacing:.1em}
+
+  /* 物件カード */
+  .cards{display:grid; grid-template-columns:1fr; gap:22px}
   @media(min-width:680px){.cards{grid-template-columns:1fr 1fr}}
   @media(min-width:980px){.cards{grid-template-columns:1fr 1fr 1fr}}
-
   .card{
-    background:var(--surface); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow);
-    cursor:pointer; transition:transform .2s ease; border:1px solid rgba(232,230,223,.6);
+    background:var(--paper); border:1px solid var(--line); overflow:hidden; cursor:pointer;
+    transition:box-shadow .25s ease, transform .25s ease; position:relative;
   }
-  .card:hover{transform:translateY(-2px)}
+  .card:hover{box-shadow:var(--shadow); transform:translateY(-2px)}
   .card .ph{aspect-ratio:4/3}
-  .card .ph .badge.rank{position:absolute; left:14px; bottom:14px; z-index:2}
   .fav{
-    position:absolute; top:12px; right:12px; z-index:2; width:38px; height:38px; border-radius:50%;
-    background:rgba(255,255,255,.92); border:0; display:flex; align-items:center; justify-content:center;
+    position:absolute; top:10px; right:10px; z-index:2; width:36px; height:36px; border-radius:50%;
+    background:rgba(255,255,255,.94); border:0; display:flex; align-items:center; justify-content:center;
   }
-  .fav svg{width:18px; height:18px; fill:none; stroke:#1B1B18; stroke-width:1.6}
-  .fav.on svg{fill:var(--accent); stroke:var(--accent)}
-  .card .body{padding:18px 20px 20px; display:flex; flex-direction:column; gap:2px}
-  .price{font-size:22px; font-weight:700; letter-spacing:.01em}
-  .price small{font-size:13px; font-weight:600}
-  .loc{font-size:13px; color:var(--sub)}
+  .fav svg{width:17px; height:17px; fill:none; stroke:var(--navy); stroke-width:1.6}
+  .fav.on svg{fill:var(--gold); stroke:var(--gold)}
+  .card .body{padding:18px 20px 20px}
+  .card .name{font-family:var(--serif); font-size:16px; letter-spacing:.08em; color:var(--navy-ink)}
+  .card .price{margin-top:6px; font-size:13px; color:var(--sub)}
+  .card .price b{font-family:var(--serif); font-size:24px; color:var(--navy); letter-spacing:.02em; margin-left:6px}
+  .card .price small{font-size:12px; color:var(--navy)}
+  .card .spec{font-size:12px; color:var(--sub); margin-top:4px; display:flex; gap:10px; flex-wrap:wrap}
+  .card .foot{display:flex; align-items:center; justify-content:space-between; margin-top:12px; padding-top:12px; border-top:1px solid var(--line)}
 
-  .areas{display:flex; flex-wrap:wrap; gap:10px}
-  .chip{
-    border:1px solid var(--line); background:var(--surface); border-radius:999px;
-    padding:9px 18px; font-size:13px; color:var(--ink); text-decoration:none;
+  /* 暗色バンド（認定レポート） */
+  .dark-band{background:var(--navy-deep); color:#E9E4D8; margin-top:96px; padding:72px 0}
+  .dark-band .kicker{color:var(--gold-bright)}
+  .dark-band h2.sec{color:#fff}
+  .dark-band .grid{display:grid; grid-template-columns:1.1fr 1fr; gap:48px; align-items:center; margin-top:34px}
+  @media(max-width:860px){.dark-band .grid{grid-template-columns:1fr}}
+  .report-mock{background:#F4F1EA; color:var(--ink); padding:26px; box-shadow:0 20px 50px rgba(0,0,0,.4)}
+  .report-mock .rm-h{font-family:var(--serif); font-size:14px; letter-spacing:.14em; color:var(--navy); border-bottom:1px solid var(--gold); padding-bottom:10px; display:flex; justify-content:space-between; align-items:baseline}
+  .report-mock .rm-h span{font-size:10px; color:var(--sub); letter-spacing:.06em}
+  .rm-row{display:flex; gap:14px; margin-top:16px; align-items:center}
+  .rm-row .ph{width:86px; height:64px; flex:none}
+  .rm-lines{flex:1}
+  .rm-lines i{display:block; height:7px; background:#D9D3C4; margin-top:6px}
+  .rm-lines i:first-child{margin-top:0; width:60%}
+  .rm-lines i:nth-child(2){width:90%}
+  .rm-lines i:nth-child(3){width:75%}
+  .checks{list-style:none; display:flex; flex-direction:column; gap:14px; font-size:14px; letter-spacing:.06em}
+  .checks li{padding-left:30px; position:relative}
+  .checks li::before{
+    content:"✓"; position:absolute; left:0; top:0; color:var(--gold-bright); font-weight:700;
   }
-  .chip:hover{border-color:var(--accent); color:var(--accent)}
+  .dark-band .btn.gold{margin-top:30px}
 
   /* ---------- 物件詳細 ---------- */
-  .bc{font-size:12px; color:var(--sub); padding:18px 0}
-  .gallery{display:grid; grid-template-columns:1fr; gap:10px}
-  @media(min-width:760px){.gallery{grid-template-columns:2fr 1fr; grid-template-rows:1fr 1fr; height:440px}
-    .gallery .g1{grid-row:1/3}}
-  .gallery .ph{border-radius:14px; min-height:220px}
-  .gallery .badge.rank{position:absolute; left:16px; bottom:16px; z-index:2; font-size:12px; padding:6px 14px}
+  .bc{font-size:11.5px; color:var(--sub); padding:18px 0; letter-spacing:.05em}
+  .detail-top{display:grid; grid-template-columns:1.15fr 1fr; gap:40px}
+  @media(max-width:900px){.detail-top{grid-template-columns:1fr}}
+  .gallery .main{aspect-ratio:4/3; position:relative}
+  .gallery .thumbs{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px}
+  .gallery .thumbs .ph{aspect-ratio:4/3; cursor:pointer; opacity:.85}
+  .gallery .thumbs .ph:hover{opacity:1}
 
-  .detail-grid{display:grid; grid-template-columns:1fr; gap:48px; margin-top:36px}
-  @media(min-width:900px){.detail-grid{grid-template-columns:1.6fr 1fr}}
+  .d-head .tags{display:flex; gap:8px; align-items:center}
+  .d-head h1{font-size:26px; color:var(--navy-ink); margin-top:10px; line-height:1.5}
+  .d-head .loc{font-size:13px; color:var(--sub); margin-top:6px}
+  .d-price{margin-top:18px; font-size:13px; color:var(--sub)}
+  .d-price b{font-family:var(--serif); font-size:38px; color:var(--navy); letter-spacing:.02em; margin-left:8px}
+  .d-price small{font-size:15px; color:var(--navy)}
+  .d-spec{font-size:13px; color:var(--ink); margin-top:4px; letter-spacing:.04em}
+  .d-actions{display:flex; gap:10px; margin-top:22px; flex-wrap:wrap}
+  .d-actions .btn{flex:1; min-width:180px}
+  .d-note{font-size:11px; color:var(--sub); margin-top:10px; text-align:center}
 
-  .d-title h1{font-size:24px; font-weight:600; letter-spacing:.02em; text-wrap:balance}
-  .d-title .loc{margin-top:4px}
-  .d-price{margin-top:14px; display:flex; align-items:baseline; gap:16px; flex-wrap:wrap}
-  .d-price .price{font-size:34px}
-  .d-sub{display:flex; gap:14px; font-size:13px; color:var(--sub); flex-wrap:wrap; margin-top:6px}
+  .score-card{border:1px solid var(--line); background:var(--paper); margin-top:26px; padding:24px 26px}
+  .score-card .sc-h{display:flex; justify-content:space-between; align-items:baseline}
+  .score-card .sc-h h3{font-size:14px; letter-spacing:.14em; color:var(--navy-ink)}
+  .score-card .sc-h a{font-size:11.5px; color:var(--gold); text-decoration:none; letter-spacing:.06em}
+  .score-flex{display:flex; gap:20px; align-items:center; margin-top:8px}
+  .score-val{font-family:var(--serif); color:var(--navy)}
+  .score-val b{font-size:52px; letter-spacing:0}
+  .score-val span{font-size:14px; color:var(--sub)}
+  .score-val .rk{display:block; font-size:13px; color:var(--gold); letter-spacing:.2em; margin-top:2px}
+  .radar{flex:1; max-width:230px; margin-left:auto; overflow:visible}
+  .score-note{font-size:11px; color:var(--sub); margin-top:10px; line-height:1.7}
 
-  .d-sec{margin-top:44px}
-  .d-sec h2{font-size:16px; font-weight:700; letter-spacing:.06em; display:flex; align-items:center; gap:10px; margin-bottom:14px}
-  .d-sec h2::before{content:""; width:18px; height:1px; background:var(--accent)}
-  .d-sec ul{list-style:none; display:flex; flex-direction:column; gap:10px; font-size:14px}
-  .d-sec ul li{padding-left:18px; position:relative}
-  .d-sec ul li::before{content:""; position:absolute; left:0; top:.72em; width:6px; height:6px; border-radius:50%; background:var(--accent)}
+  .d-tabs{display:flex; gap:0; border-bottom:1px solid var(--line); margin-top:64px; overflow-x:auto}
+  .d-tabs span{
+    padding:12px 22px; font-size:13px; letter-spacing:.1em; color:var(--sub); white-space:nowrap;
+    border-bottom:2px solid transparent; cursor:pointer;
+  }
+  .d-tabs span.on{color:var(--navy); border-bottom-color:var(--gold); font-weight:700}
+
+  .d-sec{margin-top:52px}
+  .d-sec>h2{font-size:19px; color:var(--navy-ink); padding-bottom:12px; border-bottom:1px solid var(--line); margin-bottom:22px; display:flex; align-items:baseline; gap:14px}
+  .d-sec>h2 small{font-size:10px; letter-spacing:.24em; color:var(--gold); font-family:var(--sans)}
+
+  .points{display:grid; grid-template-columns:1fr; gap:1px; background:var(--line); border:1px solid var(--line)}
+  @media(min-width:760px){.points{grid-template-columns:repeat(3,1fr)}}
+  .points .p{background:var(--paper); padding:26px 24px}
+  .points .ic{width:34px; height:34px; color:var(--gold); margin-bottom:12px}
+  .points .p b{font-family:var(--serif); font-size:15px; color:var(--navy-ink); letter-spacing:.08em}
+  .points .p p{font-size:12.5px; color:var(--sub); margin-top:8px; line-height:1.9}
+
+  .d-sec ul.plain{list-style:none; display:flex; flex-direction:column; gap:10px; font-size:14px}
+  .d-sec ul.plain li{padding-left:18px; position:relative}
+  .d-sec ul.plain li::before{content:""; position:absolute; left:0; top:.72em; width:6px; height:6px; background:var(--gold)}
   .d-sec ul.caution li::before{background:var(--hold)}
-  .d-sec p{font-size:14px; max-width:62ch}
 
-  .cert-card{
-    background:var(--accent-soft); border-radius:var(--radius); padding:26px 28px; margin-top:36px;
-    display:flex; gap:20px; align-items:flex-start;
+  table.spec{width:100%; border-collapse:collapse; font-size:13px; background:var(--paper); border:1px solid var(--line)}
+  table.spec th{
+    text-align:left; font-weight:600; color:var(--sub); padding:13px 18px;
+    border-bottom:1px solid var(--line); width:26%; background:#FBFAF6; vertical-align:top; white-space:nowrap;
   }
-  .cert-card .cert-mark{background:var(--surface)}
-  .cert-card h3{font-size:15px; letter-spacing:.04em}
-  .cert-card p{font-size:13px; color:#3D5247; margin-top:6px; max-width:58ch}
-  .cert-card a{font-size:12px; color:var(--accent); font-weight:600}
+  table.spec td{padding:13px 18px; border-bottom:1px solid var(--line)}
+  @media(min-width:760px){
+    .spec-2col{display:grid; grid-template-columns:1fr 1fr; gap:0 24px}
+  }
 
-  .agent{
-    display:flex; gap:16px; background:var(--surface); border:1px solid var(--line);
-    border-radius:var(--radius); padding:22px 24px; align-items:flex-start;
-  }
-  .agent .face{flex:none; width:52px; height:52px; border-radius:50%; background:linear-gradient(140deg,#D8CFC0,#A29883)}
-  .agent .name{font-size:12px; color:var(--sub)}
-  .agent .name b{display:block; font-size:14px; color:var(--ink)}
+  .agent{display:flex; gap:18px; background:var(--paper); border:1px solid var(--line); padding:24px 26px; align-items:flex-start}
+  .agent .face{flex:none; width:56px; height:56px; border-radius:50%; background:linear-gradient(140deg,#D6CCBA,#9E9077); border:1px solid var(--line)}
+  .agent .name{font-size:11.5px; color:var(--sub); letter-spacing:.06em}
+  .agent .name b{display:block; font-family:var(--serif); font-size:15px; color:var(--navy-ink); letter-spacing:.1em}
   .agent p{font-size:13px; margin-top:8px}
 
-  details.faq{border-bottom:1px solid var(--line)}
+  details.faq{border-bottom:1px solid var(--line); background:var(--paper)}
   details.faq summary{
-    list-style:none; cursor:pointer; padding:16px 4px; font-size:14px; font-weight:600;
-    display:flex; justify-content:space-between; gap:16px; align-items:center;
+    list-style:none; cursor:pointer; padding:16px 18px; font-size:14px; font-weight:600;
+    display:flex; justify-content:space-between; gap:16px; align-items:center; letter-spacing:.04em;
   }
   details.faq summary::-webkit-details-marker{display:none}
-  details.faq summary::after{content:"+"; color:var(--sub); font-weight:400; font-size:18px}
+  details.faq summary::after{content:"＋"; color:var(--gold); font-weight:400}
   details.faq[open] summary::after{content:"−"}
-  details.faq .a{padding:0 4px 18px; font-size:13px; color:var(--sub); max-width:62ch}
+  details.faq .a{padding:0 18px 18px; font-size:13px; color:var(--sub); max-width:66ch}
 
-  table.spec{width:100%; border-collapse:collapse; font-size:13px}
-  table.spec th{
-    text-align:left; font-weight:600; color:var(--sub); padding:11px 14px 11px 0;
-    border-bottom:1px solid var(--line); width:34%; vertical-align:top; white-space:nowrap;
-  }
-  table.spec td{padding:11px 0; border-bottom:1px solid var(--line)}
-
-  .side-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:26px; position:sticky; top:120px}
-  .side-card .metric{display:block; margin-top:10px}
-  .side-card .deadline{font-size:12px; color:var(--sub); margin-top:4px}
-  .side-card .btn{width:100%; margin-top:18px}
-  .side-card .note{font-size:11px; color:var(--sub); text-align:center; margin-top:10px}
-  .lock{
-    margin-top:18px; border:1px dashed var(--line); border-radius:var(--radius-s);
-    padding:16px; font-size:12px; color:var(--sub); text-align:center;
-  }
-  .lock b{display:block; color:var(--ink); font-size:13px; margin-bottom:4px}
-  .lock a{color:var(--accent); font-weight:600}
+  .contact-band{background:var(--navy); color:#fff; margin-top:72px; padding:40px 0}
+  .contact-band .wrap{display:flex; gap:24px; align-items:center; flex-wrap:wrap}
+  .contact-band .t{font-family:var(--serif); font-size:18px; letter-spacing:.12em}
+  .contact-band .btns{margin-left:auto; display:flex; gap:12px; flex-wrap:wrap}
 
   .cta-bar{
     position:fixed; left:0; right:0; bottom:0; z-index:60;
-    background:rgba(255,255,255,.92); backdrop-filter:blur(10px);
-    border-top:1px solid var(--line); padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+    background:rgba(12,24,40,.96); backdrop-filter:blur(8px); color:#fff;
+    padding:10px 16px calc(10px + env(safe-area-inset-bottom));
     display:none; align-items:center; gap:14px;
   }
-  .cta-bar .price{font-size:19px}
-  .cta-bar .btn{margin-left:auto; padding:11px 22px; font-size:13px}
-  .cta-bar .micro{display:none}
-  @media(max-width:899px){
-    .cta-bar.visible{display:flex}
-    .side-card{position:static}
-    .side-card .btn.entry-cta{display:none}
-  }
+  .cta-bar .p{font-family:var(--serif); font-size:19px}
+  .cta-bar .p small{font-size:11px}
+  .cta-bar .btn{margin-left:auto; padding:11px 20px; font-size:12.5px; background:var(--gold)}
+  @media(max-width:899px){.cta-bar.visible{display:flex}}
 
-  /* ---------- エントリーフロー ---------- */
-  .entry-wrap{max-width:640px; margin:0 auto; padding:48px 20px 96px}
-  .steps{display:flex; gap:8px; margin:28px 0 36px}
-  .steps .s{
-    flex:1; text-align:center; font-size:11px; letter-spacing:.05em; color:var(--sub);
-    padding-top:12px; border-top:2px solid var(--line);
-  }
-  .steps .s.on{color:var(--accent); border-top-color:var(--accent); font-weight:700}
-  .panel{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:32px}
-  @media(max-width:560px){.panel{padding:24px 20px}}
-  .panel h2{font-size:18px; font-weight:600; margin-bottom:18px; letter-spacing:.03em}
-  .notice{
-    background:var(--accent-soft); border-radius:var(--radius-s); padding:16px 18px; font-size:13px;
-    color:#2C4A3D; margin-bottom:22px;
-  }
-  .notice b{display:block; font-size:14px; color:var(--accent); margin-bottom:4px}
-  .kv{display:flex; justify-content:space-between; gap:16px; padding:12px 2px; border-bottom:1px solid var(--line); font-size:13px}
+  /* ---------- エントリー ---------- */
+  .entry-wrap{max-width:660px; margin:0 auto; padding:56px 20px 110px}
+  .steps{display:flex; gap:8px; margin:30px 0 36px}
+  .steps .s{flex:1; text-align:center; font-size:11px; letter-spacing:.06em; color:var(--sub); padding-top:12px; border-top:2px solid var(--line)}
+  .steps .s.on{color:var(--navy); border-top-color:var(--gold); font-weight:700}
+  .panel{background:var(--paper); border:1px solid var(--line); padding:36px}
+  @media(max-width:560px){.panel{padding:26px 20px}}
+  .panel h2{font-size:19px; margin-bottom:20px; color:var(--navy-ink)}
+  .notice{background:var(--gold-soft); border-left:3px solid var(--gold); padding:16px 18px; font-size:13px; color:#5A4A28; margin-bottom:24px}
+  .notice b{display:block; font-size:14px; color:#7A5F28; margin-bottom:4px; font-family:var(--serif); letter-spacing:.06em}
+  .kv{display:flex; justify-content:space-between; gap:16px; padding:13px 2px; border-bottom:1px solid var(--line); font-size:13px}
   .kv .k{color:var(--sub); white-space:nowrap}
   .kv .v{text-align:right}
   .rule-list{font-size:13px; color:var(--sub); margin-top:14px; padding-left:1.2em}
   .rule-list li{margin-top:6px}
-  fieldset{border:0; margin-top:22px}
-  legend{font-size:13px; font-weight:700; margin-bottom:10px}
-  label.opt{
-    display:flex; gap:12px; align-items:flex-start; border:1px solid var(--line); border-radius:var(--radius-s);
-    padding:14px 16px; margin-top:8px; cursor:pointer; font-size:14px;
-  }
-  label.opt:has(input:checked){border-color:var(--accent); background:var(--accent-soft)}
-  label.opt input{margin-top:4px; accent-color:var(--accent)}
+  fieldset{border:0; margin-top:24px}
+  legend{font-size:13px; font-weight:700; margin-bottom:10px; letter-spacing:.06em}
+  label.opt{display:flex; gap:12px; align-items:flex-start; border:1px solid var(--line); padding:14px 16px; margin-top:8px; cursor:pointer; font-size:14px; background:var(--paper)}
+  label.opt:has(input:checked){border-color:var(--gold); background:var(--gold-soft)}
+  label.opt input{margin-top:4px; accent-color:var(--gold)}
   label.opt small{display:block; color:var(--sub); font-size:12px}
-  .fld{margin-top:22px}
-  .fld label{font-size:13px; font-weight:700; display:block; margin-bottom:8px}
-  .fld select,.fld textarea{
-    width:100%; border:1px solid var(--line); border-radius:var(--radius-s); padding:12px 14px;
-    background:var(--surface); font-size:14px;
-  }
+  .fld{margin-top:24px}
+  .fld label{font-size:13px; font-weight:700; display:block; margin-bottom:8px; letter-spacing:.06em}
+  .fld select,.fld textarea{width:100%; border:1px solid var(--line); padding:12px 14px; background:var(--paper); font-size:14px}
   .fld textarea{min-height:90px; resize:vertical}
-  .agree{display:flex; gap:10px; align-items:flex-start; font-size:13px; margin-top:22px}
-  .agree input{margin-top:4px; accent-color:var(--accent)}
-  .panel .actions{display:flex; gap:12px; margin-top:28px; justify-content:flex-end; flex-wrap:wrap}
-  .done{text-align:center; padding:24px 0 8px}
-  .done .ok-mark{
-    width:64px; height:64px; margin:0 auto 20px; border-radius:50%; background:var(--accent-soft);
-    display:flex; align-items:center; justify-content:center;
-  }
-  .done .ok-mark svg{width:28px; height:28px; stroke:var(--accent); stroke-width:2.4; fill:none}
-  .done h2{justify-content:center}
-  .done p{font-size:13px; color:var(--sub); max-width:44ch; margin:10px auto 0}
+  .agree{display:flex; gap:10px; align-items:flex-start; font-size:13px; margin-top:24px}
+  .agree input{margin-top:4px; accent-color:var(--gold)}
+  .panel .actions{display:flex; gap:12px; margin-top:30px; justify-content:flex-end; flex-wrap:wrap}
+  .done{text-align:center; padding:26px 0 8px}
+  .done .ok-mark{width:66px; height:66px; margin:0 auto 22px; border-radius:50%; border:1px solid var(--gold); display:flex; align-items:center; justify-content:center}
+  .done .ok-mark svg{width:26px; height:26px; stroke:var(--gold); stroke-width:2; fill:none}
+  .done p{font-size:13px; color:var(--sub); max-width:46ch; margin:12px auto 0}
 
-  /* ---------- 管理画面（共通） ---------- */
-  .admin-head{background:var(--surface); border-bottom:1px solid var(--line)}
-  .admin-head .wrap{display:flex; align-items:center; gap:14px 20px; min-height:58px; flex-wrap:wrap; padding-top:10px; padding-bottom:10px}
-  .admin-head .who{margin-left:auto; font-size:12px; color:var(--sub)}
+  /* ---------- 管理画面共通 ---------- */
+  .admin-head{background:var(--navy-deep); color:#DDE3EA}
+  .admin-head .wrap{display:flex; align-items:center; gap:14px 20px; min-height:60px; flex-wrap:wrap; padding-top:10px; padding-bottom:10px}
+  .admin-head .brand .t .n{color:#fff}
+  .admin-head .who{margin-left:auto; font-size:11.5px; color:#93A1B3}
   @media(max-width:720px){.admin-head .who{flex-basis:100%; margin-left:0}}
-  .admin-tag{
-    font-size:10px; font-weight:700; letter-spacing:.12em; padding:4px 9px; border-radius:5px;
-    background:#1B1B18; color:#fff; white-space:nowrap;
-  }
-  .admin-tag.partner{background:var(--accent)}
-  .stat-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin:28px 0}
-  .stat{
-    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-s); padding:16px 18px;
-  }
-  .stat .k{font-size:11px; color:var(--sub); letter-spacing:.05em}
-  .stat .v{font-size:26px; font-weight:700; margin-top:2px}
-  .stat.todo{border-color:var(--accent); background:var(--accent-soft)}
-  .stat.todo .v{color:var(--accent)}
+  .admin-tag{font-size:10px; font-weight:700; letter-spacing:.16em; padding:4px 10px; white-space:nowrap; border:1px solid var(--gold); color:var(--gold-bright)}
 
-  .list-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; margin-bottom:32px}
+  .stat-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin:30px 0}
+  .stat{background:var(--paper); border:1px solid var(--line); padding:16px 18px}
+  .stat .k{font-size:11px; color:var(--sub); letter-spacing:.06em}
+  .stat .v{font-family:var(--serif); font-size:28px; color:var(--navy); margin-top:2px}
+  .stat.todo{border-top:3px solid var(--gold)}
+
+  .list-card{background:var(--paper); border:1px solid var(--line); margin-bottom:34px}
   .list-card header{padding:16px 22px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:12px}
-  .list-card header h3{font-size:14px; letter-spacing:.04em}
+  .list-card header h3{font-size:15px; letter-spacing:.1em; color:var(--navy-ink)}
   .list-card header .cnt{font-size:12px; color:var(--sub)}
-  .row{
-    display:flex; align-items:center; gap:16px; padding:15px 22px; border-bottom:1px solid var(--line);
-    font-size:13px; flex-wrap:wrap;
-  }
+  .row{display:flex; align-items:center; gap:16px; padding:15px 22px; border-bottom:1px solid var(--line); font-size:13px; flex-wrap:wrap}
   .row:last-child{border-bottom:0}
   .row .name{font-weight:600; min-width:180px}
   .row .meta{color:var(--sub); font-size:12px}
   .row .right{margin-left:auto; display:flex; gap:8px; align-items:center; flex-wrap:wrap}
-  .score-pill{font-weight:700; font-size:13px}
+  .score-pill{font-family:var(--serif); font-weight:700; font-size:14px; color:var(--navy)}
 
-  /* 審査パネル */
-  .review-grid{display:grid; grid-template-columns:1fr; gap:20px; padding:22px; background:#F5F4F0; border-bottom:1px solid var(--line)}
+  .review-grid{display:grid; grid-template-columns:1fr; gap:20px; padding:22px; background:#F1EFE8; border-bottom:1px solid var(--line)}
   @media(min-width:860px){.review-grid{grid-template-columns:1.2fr 1fr}}
-  .rv{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-s); padding:20px}
-  .rv h4{font-size:12px; letter-spacing:.1em; color:var(--sub); margin-bottom:14px}
+  .rv{background:var(--paper); border:1px solid var(--line); padding:22px}
+  .rv h4{font-size:11px; letter-spacing:.18em; color:var(--sub); margin-bottom:14px}
   .bar-row{display:flex; align-items:center; gap:12px; font-size:12px; margin-top:10px}
   .bar-row .lbl{width:52px; color:var(--sub); white-space:nowrap}
-  .bar{flex:1; height:6px; background:var(--line); border-radius:3px; overflow:hidden}
-  .bar i{display:block; height:100%; background:var(--accent); border-radius:3px}
-  .bar-row .vv{width:34px; text-align:right; font-weight:700}
+  .bar{flex:1; height:5px; background:var(--line); overflow:hidden}
+  .bar i{display:block; height:100%; background:linear-gradient(90deg,var(--navy),var(--gold))}
+  .bar-row .vv{width:34px; text-align:right; font-weight:700; font-family:var(--serif)}
   .total-score{display:flex; align-items:baseline; gap:10px}
-  .total-score .v{font-size:38px; font-weight:700}
-  .total-score .r{font-size:13px; font-weight:700; color:var(--accent)}
-  .flag{
-    background:var(--hold-bg); color:var(--hold); border-radius:8px; padding:10px 14px;
-    font-size:12px; margin-top:12px;
-  }
+  .total-score .v{font-family:var(--serif); font-size:42px; color:var(--navy)}
+  .total-score .r{font-size:12px; font-weight:700; color:var(--gold); letter-spacing:.14em}
+  .flag{background:var(--hold-bg); color:var(--hold); padding:10px 14px; font-size:12px; margin-top:12px; border-left:3px solid var(--hold)}
   .rv ul{list-style:none; font-size:13px; display:flex; flex-direction:column; gap:8px}
   .rv ul li{padding-left:16px; position:relative}
-  .rv ul li::before{content:""; position:absolute; left:0; top:.7em; width:5px; height:5px; border-radius:50%; background:var(--sub)}
-  .decide{grid-column:1/-1; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-s); padding:20px}
-  .decide textarea{
-    width:100%; border:1px solid var(--line); border-radius:var(--radius-s); padding:12px 14px;
-    font-size:13px; min-height:64px; resize:vertical; margin-top:8px;
-  }
+  .rv ul li::before{content:""; position:absolute; left:0; top:.7em; width:5px; height:5px; background:var(--gold)}
+  .decide{grid-column:1/-1; background:var(--paper); border:1px solid var(--line); padding:22px}
+  .decide textarea{width:100%; border:1px solid var(--line); padding:12px 14px; font-size:13px; min-height:64px; resize:vertical; margin-top:8px}
   .decide .err{color:var(--danger); font-size:12px; display:none; margin-top:6px}
   .decide .err.show{display:block}
   .decide .actions{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap}
 
-  /* 優先順位 */
-  .prio li{
-    display:flex; gap:14px; align-items:center; padding:13px 22px; border-bottom:1px solid var(--line);
-    font-size:13px; list-style:none;
-  }
-  .prio li:last-child{border-bottom:0}
+  .prio{list-style:none}
+  .prio li{display:flex; gap:14px; align-items:center; padding:13px 22px; border-bottom:1px solid var(--line); font-size:13px}
   .prio .n{
-    flex:none; width:26px; height:26px; border-radius:50%; background:var(--accent-soft); color:var(--accent);
-    font-weight:700; font-size:12px; display:flex; align-items:center; justify-content:center;
+    flex:none; width:27px; height:27px; border:1px solid var(--gold); color:var(--gold);
+    font-family:var(--serif); font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center;
   }
   .prio .why{color:var(--sub); font-size:12px}
   .prio .when{margin-left:auto; color:var(--sub); font-size:12px; white-space:nowrap}
 
-  /* ---------- 管理会社ポータル ---------- */
+  /* 管理会社 */
   .drop{
-    border:1.5px dashed #C9C6BC; border-radius:var(--radius); padding:44px 24px; text-align:center;
-    color:var(--sub); font-size:13px; cursor:pointer; background:var(--surface); transition:border-color .15s;
+    border:1.5px dashed #C6C0B0; padding:46px 24px; text-align:center; color:var(--sub); font-size:13px;
+    cursor:pointer; background:var(--paper); transition:border-color .15s;
   }
-  .drop:hover{border-color:var(--accent); color:var(--accent)}
-  .drop b{display:block; font-size:15px; color:var(--ink); margin-bottom:6px}
-  .parsing{display:none; text-align:center; padding:40px 0; color:var(--sub); font-size:13px}
-  .parsing .spin{
-    width:28px; height:28px; margin:0 auto 14px; border-radius:50%;
-    border:3px solid var(--line); border-top-color:var(--accent); animation:rot 1s linear infinite;
-  }
+  .drop:hover{border-color:var(--gold); color:var(--gold)}
+  .drop b{display:block; font-family:var(--serif); font-size:16px; color:var(--navy-ink); margin-bottom:8px; letter-spacing:.1em}
+  .parsing{display:none; text-align:center; padding:44px 0; color:var(--sub); font-size:13px}
+  .parsing .spin{width:30px; height:30px; margin:0 auto 14px; border-radius:50%; border:2px solid var(--line); border-top-color:var(--gold); animation:rot 1s linear infinite}
   @keyframes rot{to{transform:rotate(360deg)}}
   .extract{display:none}
-  .extract table{width:100%; border-collapse:collapse; font-size:13px; background:var(--surface)}
-  .extract th,.extract td{padding:11px 14px; border-bottom:1px solid var(--line); text-align:left}
-  .extract th{color:var(--sub); font-weight:600; white-space:nowrap; width:30%}
+  .extract table{width:100%; border-collapse:collapse; font-size:13px; background:var(--paper)}
+  .extract th,.extract td{padding:12px 16px; border-bottom:1px solid var(--line); text-align:left}
+  .extract th{color:var(--sub); font-weight:600; white-space:nowrap; width:30%; background:#FBFAF6}
   .extract .conf{font-size:11px; color:var(--sub)}
   .extract tr.warn td{background:var(--hold-bg)}
   .extract tr.warn .conf{color:var(--hold); font-weight:700}
-  .improve{
-    background:var(--hold-bg); border-radius:var(--radius-s); padding:16px 18px; font-size:13px;
-    color:#6B4A0E; margin:0 22px 16px;
-  }
+  .improve{background:var(--hold-bg); border-left:3px solid var(--hold); padding:16px 18px; font-size:13px; color:#6B4A0E; margin:0 22px 16px}
   .improve b{display:block; margin-bottom:6px; color:var(--hold)}
   .improve ul{padding-left:1.2em; margin-top:4px}
 </style>
@@ -431,7 +450,7 @@
 
 <!-- ══════════ プロトタイプ切替バー ══════════ -->
 <div class="proto-bar">
-  <span class="label">LIFE SHIFT SELECT ／ 画面プロトタイプ v0.1</span>
+  <span class="label">LIFE SHIFT SELECT ／ 画面プロトタイプ v0.2</span>
   <nav>
     <button class="on" data-s="top" onclick="go('top')">TOP</button>
     <button data-s="detail" onclick="go('detail')">物件詳細</button>
@@ -445,151 +464,211 @@
 <section id="scr-top" class="screen on">
   <header class="site-head">
     <div class="wrap">
-      <span class="wordmark">LIFE SHIFT <em>SELECT</em></span>
+      <div class="brand" onclick="go('top')">
+        <div class="monogram">LS</div>
+        <div class="t"><div class="n">LIFE SHIFT SELECT</div><div class="tg">資産価値が続く、住まいを選ぶ。</div></div>
+      </div>
       <nav>
-        <a href="#" class="hide-m" onclick="return false">認定物件</a>
-        <a href="#" class="hide-m" onclick="return false">Life Shift認定とは</a>
-        <a href="#" onclick="return false">ログイン</a>
-        <a href="#" onclick="toast('会員登録モーダル（メール / Google）を表示します');return false" class="btn sm" style="text-decoration:none">会員登録</a>
+        <a href="#" class="hide-m" onclick="return false">物件を探す</a>
+        <a href="#" class="hide-m" onclick="return false">認定基準について</a>
+        <a href="#" class="hide-m" onclick="return false">エリアガイド</a>
+        <a href="#" class="hide-m" onclick="return false">会社概要</a>
+        <a href="#" onclick="toast('会員登録モーダル（メール / Google）を表示します');return false" class="btn sm" style="text-decoration:none">会員登録（無料）</a>
+        <a href="#" onclick="return false" class="btn sm gold" style="text-decoration:none">ログイン</a>
       </nav>
     </div>
   </header>
 
   <div class="hero">
-    <div class="ph ph-bg a"></div>
+    <div class="ph ph-bg city-dusk"></div>
     <div class="veil"></div>
     <div class="inner wrap">
-      <h1>本当に価値のある住まいだけを。</h1>
-      <p>独自の評価基準と社内審査を通過した、認定物件のみを掲載しています。</p>
-      <div class="search">
-        <input type="search" placeholder="エリア・駅名で探す（例: 岡崎市、東岡崎）" aria-label="エリア・駅名で探す">
-        <select aria-label="価格帯"><option>価格帯</option><option>〜2,000万円</option><option>2,000〜3,500万円</option><option>3,500万円〜</option></select>
-        <button class="btn" onclick="toast('検索結果ページはプロトタイプ対象外です')">検索</button>
-      </div>
+      <h1>本当に価値のある<br>住まいだけを。</h1>
+      <p class="lead">立地、建物、環境、将来性。<br>資産価値が続く住まいを、独自の認定基準で厳選します。</p>
+      <button class="btn gold arrow" onclick="toast('会員登録モーダルを表示します')">会員登録して物件を見る（無料）　</button>
     </div>
   </div>
 
-  <div class="cert-strip">
-    <div class="wrap">
-      <div class="cert-mark"><b>LS</b><span>認定</span></div>
-      <p>Life Shift Selectに掲載されるのは、立地・資産性・流動性・状態を審査し、<b>評価85点以上かつ社内審査を通過した物件のみ</b>。将来も価値が残る住まいだけをご紹介します。</p>
-      <a href="#" onclick="toast('認定制度の説明ページ（/certification/）へ');return false">認定制度について →</a>
+  <div class="search-band wrap">
+    <div class="search-card">
+      <div class="search-left">
+        <div class="ttl">エリアから探す</div>
+        <div class="search-row">
+          <select aria-label="都道府県"><option>愛知県</option></select>
+          <select aria-label="市区町村"><option>市区町村を選択</option><option>名古屋市</option><option>岡崎市</option><option>豊田市</option><option>刈谷市</option></select>
+          <select aria-label="こだわり条件"><option>こだわり条件</option><option>駅徒歩10分以内</option><option>認定ランクS</option></select>
+          <button class="btn" onclick="toast('検索結果ページはプロトタイプ対象外です')">🔍 この条件で探す</button>
+        </div>
+      </div>
+      <div class="usp">
+        <div class="u">
+          <svg class="ic" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="6" y="10" width="9" height="18"/><rect x="19" y="5" width="9" height="23"/><path d="M3 28h28M8.5 14h4M8.5 18h4M21.5 9h4M21.5 13h4M21.5 17h4"/></svg>
+          <div><b>認定基準で厳選</b><p>独自の評価基準（85点以上）と社内審査をクリアした物件のみ掲載</p></div>
+        </div>
+        <div class="u">
+          <svg class="ic" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M5 26 12 18l5 4 9-11"/><path d="M22 11h4v4"/><path d="M3 30h28"/></svg>
+          <div><b>将来価値を見極める</b><p>人口動態・再開発・周辺相場から資産性を分析して評価</p></div>
+        </div>
+        <div class="u">
+          <svg class="ic" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M17 4l10 4v7c0 7-4.5 12-10 15C11.5 27 7 22 7 15V8z"/><path d="M12.5 16.5l3.5 3.5 6-7"/></svg>
+          <div><b>専任担当がサポート</b><p>宅建士がエントリーからご契約まで一貫してサポート</p></div>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="wrap">
     <section class="block">
       <div class="sec-head">
-        <div><span class="kicker">Popular</span><h2 class="sec">人気の認定物件</h2></div>
-        <a class="more" href="#" onclick="return false">すべて見る →</a>
+        <div><span class="kicker">CERTIFICATION</span><h2 class="sec">資産価値が続く理由</h2>
+        <p class="sec-lead">5つの視点で評価し、基準を満たした物件だけを「Life Shift認定」として掲載します。</p></div>
       </div>
-      <div class="cards">
-        <article class="card" onclick="go('detail')">
-          <div class="ph b">
-            <button class="fav" aria-label="お気に入りに追加" onclick="favToggle(event,this)"><svg viewBox="0 0 24 24"><path d="M12 21C7 16.5 3 13.2 3 9.3 3 6.4 5.2 4.5 7.8 4.5c1.6 0 3.1.8 4.2 2.2 1.1-1.4 2.6-2.2 4.2-2.2 2.6 0 4.8 1.9 4.8 4.8 0 3.9-4 7.2-9 11.7z"/></svg></button>
-            <span class="badge rank"><span class="s">◆</span> 認定ランク S</span>
-          </div>
-          <div class="body">
-            <span class="price num">3,280<small>万円</small></span>
-            <span class="loc">岡崎市 明大寺町｜3LDK・71.2㎡</span>
-            <span class="metric">現在12名が検討中</span>
-          </div>
-        </article>
-        <article class="card" onclick="go('detail')">
-          <div class="ph d">
-            <button class="fav" aria-label="お気に入りに追加" onclick="favToggle(event,this)"><svg viewBox="0 0 24 24"><path d="M12 21C7 16.5 3 13.2 3 9.3 3 6.4 5.2 4.5 7.8 4.5c1.6 0 3.1.8 4.2 2.2 1.1-1.4 2.6-2.2 4.2-2.2 2.6 0 4.8 1.9 4.8 4.8 0 3.9-4 7.2-9 11.7z"/></svg></button>
-            <span class="badge rank"><span class="s">◆</span> 認定ランク A</span>
-          </div>
-          <div class="body">
-            <span class="price num">4,180<small>万円</small></span>
-            <span class="loc">名古屋市中村区｜2LDK・58.4㎡</span>
-            <span class="metric">お気に入り 328</span>
-          </div>
-        </article>
-        <article class="card" onclick="go('detail')">
-          <div class="ph c">
-            <button class="fav" aria-label="お気に入りに追加" onclick="favToggle(event,this)"><svg viewBox="0 0 24 24"><path d="M12 21C7 16.5 3 13.2 3 9.3 3 6.4 5.2 4.5 7.8 4.5c1.6 0 3.1.8 4.2 2.2 1.1-1.4 2.6-2.2 4.2-2.2 2.6 0 4.8 1.9 4.8 4.8 0 3.9-4 7.2-9 11.7z"/></svg></button>
-            <span class="badge rank"><span class="s">◆</span> 認定ランク A</span>
-          </div>
-          <div class="body">
-            <span class="price num">2,980<small>万円</small></span>
-            <span class="loc">豊田市 若宮町｜4LDK・戸建て</span>
-            <span class="metric">人気ランキング 3位</span>
-          </div>
-        </article>
+      <div class="criteria">
+        <div class="c">
+          <svg class="ic" viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M19 33c7-7 11-12 11-17a11 11 0 10-22 0c0 5 4 10 11 17z"/><circle cx="19" cy="15" r="4"/></svg>
+          <div class="n">立地評価</div><div class="v">92<small>点平均</small></div>
+        </div>
+        <div class="c">
+          <svg class="ic" viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 32 13 24l6 5 11-13"/><path d="M25 16h5v5"/><path d="M4 34h30"/></svg>
+          <div class="n">資産性評価</div><div class="v">88<small>点平均</small></div>
+        </div>
+        <div class="c">
+          <svg class="ic" viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="8" y="12" width="10" height="20"/><rect x="20" y="6" width="10" height="26"/><path d="M5 32h28M11 16h4M11 20h4M23 10h4M23 14h4M23 18h4"/></svg>
+          <div class="n">建物評価</div><div class="v">86<small>点平均</small></div>
+        </div>
+        <div class="c">
+          <svg class="ic" viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M8 8h16v24H8zM24 14h7v18h-7z"/><path d="M12 13h3M12 18h3M12 23h3M19 13h1M19 18h1M19 23h1M5 32h29"/></svg>
+          <div class="n">管理品質</div><div class="v">84<small>点平均</small></div>
+        </div>
+        <div class="c">
+          <svg class="ic" viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M19 32c-8-3-12-9-11-18 7-1 13 1 16 6s0 10-5 12z"/><path d="M12 30c2-8 7-13 13-15"/></svg>
+          <div class="n">環境評価</div><div class="v">85<small>点平均</small></div>
+        </div>
       </div>
+      <p style="font-size:11.5px;color:var(--sub);margin-top:12px">※ 総合評価85点以上かつ社内審査を通過した物件のみを掲載しています。点数は掲載物件の平均値（イメージ）。詳細な採点基準は担当者よりご説明します。</p>
     </section>
 
     <section class="block">
       <div class="sec-head">
-        <div><span class="kicker">New</span><h2 class="sec">新着の認定物件</h2></div>
-        <a class="more" href="#" onclick="return false">すべて見る →</a>
-      </div>
-      <div class="cards">
-        <article class="card" onclick="go('detail')">
-          <div class="ph e">
-            <button class="fav" aria-label="お気に入りに追加" onclick="favToggle(event,this)"><svg viewBox="0 0 24 24"><path d="M12 21C7 16.5 3 13.2 3 9.3 3 6.4 5.2 4.5 7.8 4.5c1.6 0 3.1.8 4.2 2.2 1.1-1.4 2.6-2.2 4.2-2.2 2.6 0 4.8 1.9 4.8 4.8 0 3.9-4 7.2-9 11.7z"/></svg></button>
-            <span class="badge rank"><span class="s">◆</span> 認定ランク B</span>
-          </div>
-          <div class="body">
-            <span class="price num">2,480<small>万円</small></span>
-            <span class="loc">一宮市 本町｜3LDK・68.9㎡</span>
-            <span class="metric">新着</span>
-          </div>
-        </article>
-        <article class="card" onclick="go('detail')">
-          <div class="ph f">
-            <button class="fav" aria-label="お気に入りに追加" onclick="favToggle(event,this)"><svg viewBox="0 0 24 24"><path d="M12 21C7 16.5 3 13.2 3 9.3 3 6.4 5.2 4.5 7.8 4.5c1.6 0 3.1.8 4.2 2.2 1.1-1.4 2.6-2.2 4.2-2.2 2.6 0 4.8 1.9 4.8 4.8 0 3.9-4 7.2-9 11.7z"/></svg></button>
-            <span class="badge rank"><span class="s">◆</span> 認定ランク A</span>
-          </div>
-          <div class="body">
-            <span class="price num">5,480<small>万円</small></span>
-            <span class="loc">名古屋市東区｜3LDK・82.6㎡</span>
-            <span class="metric">新着</span>
-          </div>
-        </article>
-        <article class="card" onclick="go('detail')">
-          <div class="ph a">
-            <button class="fav" aria-label="お気に入りに追加" onclick="favToggle(event,this)"><svg viewBox="0 0 24 24"><path d="M12 21C7 16.5 3 13.2 3 9.3 3 6.4 5.2 4.5 7.8 4.5c1.6 0 3.1.8 4.2 2.2 1.1-1.4 2.6-2.2 4.2-2.2 2.6 0 4.8 1.9 4.8 4.8 0 3.9-4 7.2-9 11.7z"/></svg></button>
-            <span class="badge rank"><span class="s">◆</span> 認定ランク S</span>
-          </div>
-          <div class="body">
-            <span class="price num">3,880<small>万円</small></span>
-            <span class="loc">刈谷市 桜町｜3LDK・74.0㎡</span>
-            <span class="metric">新着</span>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section class="block">
-      <div class="sec-head">
-        <div><span class="kicker">Area</span><h2 class="sec">エリアから探す</h2></div>
+        <div><span class="kicker">AREA</span><h2 class="sec">おすすめエリア</h2></div>
+        <a class="more" href="#" onclick="return false">エリアガイドを見る →</a>
       </div>
       <div class="areas">
-        <a class="chip" href="#" onclick="return false">名古屋市</a>
-        <a class="chip" href="#" onclick="return false">岡崎市</a>
-        <a class="chip" href="#" onclick="return false">豊田市</a>
-        <a class="chip" href="#" onclick="return false">一宮市</a>
-        <a class="chip" href="#" onclick="return false">春日井市</a>
-        <a class="chip" href="#" onclick="return false">刈谷市</a>
-        <a class="chip" href="#" onclick="return false">安城市</a>
-        <a class="chip" href="#" onclick="return false">豊橋市</a>
+        <div class="area-card" onclick="toast('エリアページはプロトタイプ対象外です')">
+          <div class="ph city-night"></div><div class="sh"></div>
+          <div class="t"><b>名古屋市 東区・中区</b><span>都心の利便と資産性を両立</span><span class="lk">エリアを見る →</span></div>
+        </div>
+        <div class="area-card" onclick="toast('エリアページはプロトタイプ対象外です')">
+          <div class="ph city-day"></div><div class="sh"></div>
+          <div class="t"><b>岡崎市 康生・明大寺</b><span>再開発が進む城下町エリア</span><span class="lk">エリアを見る →</span></div>
+        </div>
+        <div class="area-card" onclick="toast('エリアページはプロトタイプ対象外です')">
+          <div class="ph green"></div><div class="sh"></div>
+          <div class="t"><b>豊田市 中心市街地</b><span>雇用に支えられた安定需要</span><span class="lk">エリアを見る →</span></div>
+        </div>
+        <div class="area-card" onclick="toast('エリアページはプロトタイプ対象外です')">
+          <div class="ph city-dusk"></div><div class="sh"></div>
+          <div class="t"><b>刈谷市・安城市</b><span>名古屋通勤圏の住宅都市</span><span class="lk">エリアを見る →</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="sec-head">
+        <div><span class="kicker">SELECTION</span><h2 class="sec">厳選物件</h2>
+        <p class="sec-lead">資産価値の高い住まいを厳選してご紹介します。</p></div>
+        <a class="more" href="#" onclick="return false">すべての物件を見る →</a>
+      </div>
+      <div class="cards">
+        <article class="card" onclick="go('detail')">
+          <div class="ph interior">
+            <span class="badge-new">NEW</span>
+            <button class="fav" aria-label="お気に入りに追加" onclick="favToggle(event,this)"><svg viewBox="0 0 24 24"><path d="M12 21C7 16.5 3 13.2 3 9.3 3 6.4 5.2 4.5 7.8 4.5c1.6 0 3.1.8 4.2 2.2 1.1-1.4 2.6-2.2 4.2-2.2 2.6 0 4.8 1.9 4.8 4.8 0 3.9-4 7.2-9 11.7z"/></svg></button>
+            <span class="badge-rank on-photo">認定ランク S</span>
+          </div>
+          <div class="body">
+            <div class="name">岡崎市 明大寺の邸宅</div>
+            <div class="price">価格<b class="num">3,280</b><small>万円</small></div>
+            <div class="spec"><span>3LDK / 71.2㎡ / 築2008年</span></div>
+            <div class="spec"><span>名鉄「東岡崎」駅 徒歩8分</span></div>
+            <div class="foot"><span class="metric">現在12名が検討中</span></div>
+          </div>
+        </article>
+        <article class="card" onclick="go('detail')">
+          <div class="ph city-day">
+            <button class="fav" aria-label="お気に入りに追加" onclick="favToggle(event,this)"><svg viewBox="0 0 24 24"><path d="M12 21C7 16.5 3 13.2 3 9.3 3 6.4 5.2 4.5 7.8 4.5c1.6 0 3.1.8 4.2 2.2 1.1-1.4 2.6-2.2 4.2-2.2 2.6 0 4.8 1.9 4.8 4.8 0 3.9-4 7.2-9 11.7z"/></svg></button>
+            <span class="badge-rank on-photo">認定ランク A</span>
+          </div>
+          <div class="body">
+            <div class="name">名古屋市中村区 名駅南</div>
+            <div class="price">価格<b class="num">4,180</b><small>万円</small></div>
+            <div class="spec"><span>2LDK / 58.4㎡ / 築2019年</span></div>
+            <div class="spec"><span>「名古屋」駅 徒歩9分</span></div>
+            <div class="foot"><span class="metric">お気に入り 328</span></div>
+          </div>
+        </article>
+        <article class="card" onclick="go('detail')">
+          <div class="ph city-night">
+            <span class="badge-new">NEW</span>
+            <button class="fav" aria-label="お気に入りに追加" onclick="favToggle(event,this)"><svg viewBox="0 0 24 24"><path d="M12 21C7 16.5 3 13.2 3 9.3 3 6.4 5.2 4.5 7.8 4.5c1.6 0 3.1.8 4.2 2.2 1.1-1.4 2.6-2.2 4.2-2.2 2.6 0 4.8 1.9 4.8 4.8 0 3.9-4 7.2-9 11.7z"/></svg></button>
+            <span class="badge-rank on-photo">認定ランク S</span>
+          </div>
+          <div class="body">
+            <div class="name">名古屋市東区 白壁</div>
+            <div class="price">価格<b class="num">5,480</b><small>万円</small></div>
+            <div class="spec"><span>3LDK / 82.6㎡ / 築2016年</span></div>
+            <div class="spec"><span>「高岳」駅 徒歩6分</span></div>
+            <div class="foot"><span class="metric">人気ランキング 1位</span></div>
+          </div>
+        </article>
       </div>
     </section>
   </div>
 
-  <footer class="site-foot">
+  <div class="dark-band">
     <div class="wrap">
-      <span class="wordmark" style="font-size:12px">LIFE SHIFT <em>SELECT</em></span>
+      <span class="kicker">REPORT</span>
+      <h2 class="sec">認定評価レポートの一例</h2>
+      <div class="grid">
+        <div class="report-mock">
+          <div class="rm-h">Life Shift 認定評価レポート<span>CONFIDENTIAL</span></div>
+          <div class="rm-row"><div class="ph city-day"></div><div class="rm-lines"><i></i><i></i><i></i></div></div>
+          <div class="rm-row"><div class="ph interior"></div><div class="rm-lines"><i></i><i></i><i></i></div></div>
+          <div class="rm-row"><div class="ph city-night"></div><div class="rm-lines"><i></i><i></i><i></i></div></div>
+        </div>
+        <div>
+          <ul class="checks">
+            <li>エリアの将来価値予測</li>
+            <li>周辺相場の推移グラフ</li>
+            <li>再開発・インフラ計画情報</li>
+            <li>賃貸ニーズ・流動性の分析</li>
+            <li>総合評価と今後の見通し</li>
+          </ul>
+          <button class="btn gold arrow" onclick="toast('会員登録モーダルを表示します')">無料会員登録してレポートを見る　</button>
+          <p style="font-size:11.5px;opacity:.7;margin-top:14px">※ 詳細な採点基準・アルゴリズムは非公開です。ご相談時に担当者よりご説明します。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-foot" style="margin-top:0; border-top:1px solid rgba(255,255,255,.1)">
+    <div class="wrap">
+      <div class="brand">
+        <div class="monogram">LS</div>
+        <div class="t"><div class="n">LIFE SHIFT SELECT</div><div class="tg">資産価値が続く、住まいを選ぶ。</div></div>
+      </div>
       <div class="links">
-        <a href="#" onclick="return false">運営会社</a>
-        <a href="#" onclick="return false">Life Shift認定とは</a>
+        <a href="#" onclick="return false">物件を探す</a>
+        <a href="#" onclick="return false">認定基準について</a>
+        <a href="#" onclick="return false">エリアガイド</a>
+        <a href="#" onclick="return false">会社概要</a>
         <a href="#" onclick="return false">利用規約</a>
         <a href="#" onclick="return false">プライバシーポリシー</a>
       </div>
-      <span>株式会社Life Shift｜宅地建物取引業 愛知県知事（1）第00000号</span>
-      <span style="opacity:.7">※本画面はプロトタイプです。掲載中の物件・数値・免許番号はすべて架空のものです。</span>
+      <div class="legal">
+        株式会社Life Shift｜宅地建物取引業 愛知県知事（1）第00000号<br>
+        ※本画面はプロトタイプです。掲載中の物件・数値・免許番号はすべて架空のものです。
+      </div>
     </div>
   </footer>
 </section>
@@ -598,138 +677,183 @@
 <section id="scr-detail" class="screen">
   <header class="site-head">
     <div class="wrap">
-      <span class="wordmark" style="cursor:pointer" onclick="go('top')">LIFE SHIFT <em>SELECT</em></span>
+      <div class="brand" onclick="go('top')">
+        <div class="monogram">LS</div>
+        <div class="t"><div class="n">LIFE SHIFT SELECT</div><div class="tg">資産価値が続く、住まいを選ぶ。</div></div>
+      </div>
       <nav>
-        <a href="#" class="hide-m" onclick="return false">認定物件</a>
-        <a href="#" onclick="return false">ログイン</a>
+        <a href="#" class="hide-m" onclick="return false">物件を探す</a>
+        <a href="#" class="hide-m" onclick="return false">認定基準について</a>
+        <a href="#" onclick="toast('会員登録モーダルを表示します');return false" class="btn sm" style="text-decoration:none">会員登録（無料）</a>
       </nav>
     </div>
   </header>
 
   <div class="wrap">
-    <div class="bc">TOP ＞ 愛知県 ＞ 岡崎市 ＞ 中古マンション ＞ グランレジデンス東岡崎</div>
+    <div class="bc">ホーム ＞ 物件一覧 ＞ 岡崎市 明大寺の邸宅</div>
 
-    <div class="gallery">
-      <div class="ph b g1"><span class="badge rank"><span class="s">◆</span> Life Shift 認定ランク S</span></div>
-      <div class="ph e"></div>
-      <div class="ph a"></div>
-    </div>
-
-    <div class="detail-grid">
-      <div>
-        <div class="d-title">
-          <h1>グランレジデンス東岡崎 302号室</h1>
-          <div class="loc">愛知県岡崎市明大寺町｜名鉄名古屋本線「東岡崎」徒歩8分</div>
-          <div class="d-price">
-            <span class="price num">3,280<small style="font-size:15px">万円</small></span>
-            <span class="metric">現在12名が検討中</span>
-          </div>
-          <div class="d-sub"><span>3LDK</span><span>71.2㎡</span><span>2008年3月築</span><span>7階/10階建</span></div>
+    <div class="detail-top">
+      <div class="gallery">
+        <div class="ph main interior">
+          <span class="badge-new">NEW</span>
+          <span class="badge-rank on-photo">Life Shift 認定ランク S</span>
         </div>
-
-        <div class="cert-card">
-          <div class="cert-mark"><b>LS</b><span>認定</span></div>
-          <div>
-            <h3>Life Shift 認定ランク S</h3>
-            <p>駅徒歩8分の立地と管理状態の良さに対して、価格が周辺相場に照らして適正圏にあります。総合評価・認定基準の詳細は、ご相談時に担当者よりご説明します。</p>
-            <a href="#" onclick="toast('認定制度の説明ページへ');return false">ランクSとは →</a>
-          </div>
-        </div>
-
-        <div class="d-sec">
-          <h2>おすすめの理由</h2>
-          <ul>
-            <li>東岡崎駅徒歩8分。再開発が進むエリアで、中長期の資産性が見込める立地です。</li>
-            <li>管理組合の修繕履歴が明瞭で、大規模修繕（2023年）実施済み。管理状態は良好です。</li>
-            <li>同マンション内の直近成約と比較して、価格が適正圏に収まっています。</li>
-          </ul>
-        </div>
-
-        <div class="d-sec">
-          <h2>向いている人</h2>
-          <ul>
-            <li>通勤で名古屋方面へ出る、共働きのご夫婦・ファミリー</li>
-            <li>将来の住み替え・売却まで見据えて、流動性の高い物件を選びたい方</li>
-          </ul>
-        </div>
-
-        <div class="d-sec">
-          <h2>ご検討の際の注意点</h2>
-          <ul class="caution">
-            <li>管理費+修繕積立金が月額22,300円と、同規模物件の平均よりやや高めです。</li>
-            <li>バルコニーは西向きのため、夏季の西日対策をご検討ください。</li>
-          </ul>
-        </div>
-
-        <div class="d-sec">
-          <h2>担当者コメント</h2>
-          <div class="agent">
-            <div class="face" aria-hidden="true"></div>
-            <div>
-              <span class="name"><b>佐々木 遥</b>宅地建物取引士｜Life Shift</span>
-              <p>この物件は「管理を買え」を体現する一戸です。修繕積立の計画性と駅前再開発の進捗を合わせて評価しました。気になる点も含めて、ご相談時に分析結果をすべてご説明します。</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="d-sec">
-          <h2>よくあるご質問</h2>
-          <details class="faq">
-            <summary>エントリーすると購入しなければいけませんか？</summary>
-            <div class="a">いいえ。エントリーは売買契約の申込みではなく、優先的にご相談いただける権利の申込みです。期間中はいつでも撤回でき、費用もかかりません。</div>
-          </details>
-          <details class="faq">
-            <summary>優先購入の順番はどのように決まりますか？</summary>
-            <div class="a">事前に公開しているルール（資金準備状況を第一基準、エントリー日時を第二基準）に基づいて機械的に決定し、担当者が確認のうえ確定します。入札や価格競争は行いません。</div>
-          </details>
-          <details class="faq">
-            <summary>住宅ローンの相談はできますか？</summary>
-            <div class="a">はい。エントリー前の事前審査のご案内から、ご契約までの資金計画まで担当者がサポートします。事前審査済みの方は優先順位の決定時に考慮されます。</div>
-          </details>
-        </div>
-
-        <div class="d-sec">
-          <h2>物件概要</h2>
-          <table class="spec">
-            <tr><th>所在地</th><td>愛知県岡崎市明大寺町（詳細はご相談時にご案内）</td></tr>
-            <tr><th>交通</th><td>名鉄名古屋本線「東岡崎」徒歩8分</td></tr>
-            <tr><th>間取り / 専有面積</th><td>3LDK / 71.2㎡（壁芯）</td></tr>
-            <tr><th>築年月</th><td>2008年3月</td></tr>
-            <tr><th>管理費 / 修繕積立金</th><td class="num">12,500円 / 9,800円（月額）</td></tr>
-            <tr><th>土地権利</th><td>所有権</td></tr>
-            <tr><th>取引態様</th><td>媒介</td></tr>
-            <tr><th>情報更新日</th><td>2026年7月5日</td></tr>
-          </table>
+        <div class="thumbs">
+          <div class="ph interior"></div>
+          <div class="ph city-day"></div>
+          <div class="ph city-dusk"></div>
+          <div class="ph green"></div>
         </div>
       </div>
 
-      <aside>
-        <div class="side-card">
-          <span class="kicker">Priority Entry</span>
-          <div class="d-price" style="margin-top:8px"><span class="price num">3,280<small style="font-size:13px">万円</small></span></div>
-          <span class="metric">現在12名が検討中</span>
-          <span class="deadline">エントリー受付は 7月20日（月）まで</span>
+      <div class="d-head">
+        <div class="tags"><span class="badge-rank">認定ランク S</span><span class="metric">現在12名が検討中</span></div>
+        <h1>岡崎市 明大寺の邸宅<br><span style="font-size:15px;letter-spacing:.1em">グランレジデンス東岡崎 302号室</span></h1>
+        <div class="loc">愛知県岡崎市明大寺町｜名鉄名古屋本線「東岡崎」駅 徒歩8分</div>
+        <div class="d-price">価格<b class="num">3,280</b><small>万円</small></div>
+        <div class="d-spec">3LDK / 71.2㎡（壁芯） / 2008年3月築 / 7階部分</div>
+        <div class="d-actions">
+          <button class="btn ghost" onclick="toast('お気に入りに追加しました')">♡ お気に入りに追加</button>
           <button class="btn entry-cta" onclick="go('entry')">優先購入エントリー</button>
-          <div class="note">エントリーは契約ではありません。いつでも撤回できます。</div>
-          <div class="lock">
-            <b>会員限定の詳細分析</b>
-            周辺成約事例・維持費シミュレーションなどは無料会員に公開しています。<br>
-            <a href="#" onclick="toast('会員登録モーダルを表示します');return false">無料会員登録して見る →</a>
-          </div>
         </div>
-      </aside>
+        <div class="d-note">エントリーは契約ではありません。いつでも撤回できます。｜受付は 7月20日（月）まで</div>
+
+        <div class="score-card">
+          <div class="sc-h"><h3 class="serif">資産価値スコア</h3><a href="#" onclick="toast('スコアの考え方の説明ページへ');return false">スコアの見方 →</a></div>
+          <div class="score-flex">
+            <div class="score-val"><b class="num">92</b><span> /100</span><span class="rk">認定ランク S</span></div>
+            <svg class="radar" viewBox="0 0 200 190" role="img" aria-label="評価レーダーチャート">
+              <g stroke="#E0DBCE" fill="none">
+                <polygon points="100,20 176.1,75.3 147,164.7 53,164.7 23.9,75.3"/>
+                <polygon points="100,40 157,81.5 135.3,148.5 64.8,148.5 42.9,81.5"/>
+                <polygon points="100,60 138,87.6 123.5,132.4 76.5,132.4 61.9,87.6"/>
+                <line x1="100" y1="100" x2="100" y2="20"/><line x1="100" y1="100" x2="176.1" y2="75.3"/>
+                <line x1="100" y1="100" x2="147" y2="164.7"/><line x1="100" y1="100" x2="53" y2="164.7"/>
+                <line x1="100" y1="100" x2="23.9" y2="75.3"/>
+              </g>
+              <polygon points="100,26.4 167,78.3 138.1,152.4 59.6,155.6 35.3,79" fill="rgba(176,141,79,.28)" stroke="#B08D4F" stroke-width="1.5"/>
+              <g font-size="10" fill="#6E7883" text-anchor="middle" font-family="sans-serif">
+                <text x="100" y="12">立地 95</text>
+                <text x="178" y="64">資産性 88</text>
+                <text x="152" y="180">流動性 81</text>
+                <text x="48" y="180">状態 86</text>
+                <text x="16" y="68">管理 85</text>
+              </g>
+            </svg>
+          </div>
+          <p class="score-note">スコアは掲載時点の評価です。詳細な採点基準・内訳は非公開とし、ご相談時に担当の宅建士が根拠をご説明します。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-tabs">
+      <span class="on">物件概要</span><span onclick="toast('会員限定コンテンツです（無料会員登録で閲覧できます）')">資産価値分析</span><span onclick="toast('プロトタイプ対象外です')">周辺環境</span><span onclick="toast('プロトタイプ対象外です')">設備・仕様</span><span onclick="toast('プロトタイプ対象外です')">間取り</span>
+    </div>
+
+    <div class="d-sec">
+      <h2>資産価値のポイント<small>POINTS</small></h2>
+      <div class="points">
+        <div class="p">
+          <svg class="ic" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M17 30c6-6 10-11 10-15a10 10 0 10-20 0c0 4 4 9 10 15z"/><circle cx="17" cy="14" r="3.5"/></svg>
+          <b>再開発が進む駅近立地</b>
+          <p>東岡崎駅徒歩8分。駅前再開発の進捗により、中長期の資産性が見込めるエリアです。</p>
+        </div>
+        <div class="p">
+          <svg class="ic" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="7" y="10" width="9" height="19"/><rect x="18" y="5" width="9" height="24"/><path d="M4 29h26M10 14h3M10 18h3M21 9h3M21 13h3M21 17h3"/></svg>
+          <b>計画的な維持管理</b>
+          <p>修繕履歴が明瞭で、2023年に大規模修繕を実施済み。長期修繕計画も適切に運用されています。</p>
+        </div>
+        <div class="p">
+          <svg class="ic" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M5 26 12 18l5 4 9-11"/><path d="M22 11h4v4"/><path d="M3 30h28"/></svg>
+          <b>適正圏の価格設定</b>
+          <p>同マンション内の直近成約と比較して価格が適正圏にあり、将来の売却時にも流動性が期待できます。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-sec">
+      <h2>ご検討の際の注意点<small>CAUTIONS</small></h2>
+      <ul class="plain caution">
+        <li>管理費+修繕積立金が月額22,300円と、同規模物件の平均よりやや高めです。</li>
+        <li>バルコニーは西向きのため、夏季の西日対策をご検討ください。</li>
+      </ul>
+    </div>
+
+    <div class="d-sec">
+      <h2>向いている人<small>SUITABLE FOR</small></h2>
+      <ul class="plain">
+        <li>通勤で名古屋方面へ出る、共働きのご夫婦・ファミリー</li>
+        <li>将来の住み替え・売却まで見据えて、流動性の高い物件を選びたい方</li>
+      </ul>
+    </div>
+
+    <div class="d-sec">
+      <h2>担当者コメント<small>COMMENT</small></h2>
+      <div class="agent">
+        <div class="face" aria-hidden="true"></div>
+        <div>
+          <span class="name"><b>佐々木 遥</b>宅地建物取引士｜Life Shift</span>
+          <p>この物件は「管理を買え」を体現する一戸です。修繕積立の計画性と駅前再開発の進捗を合わせて評価しました。気になる点も含めて、ご相談時に分析結果をすべてご説明します。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-sec">
+      <h2>物件概要<small>OVERVIEW</small></h2>
+      <div class="spec-2col">
+        <table class="spec">
+          <tr><th>所在地</th><td>愛知県岡崎市明大寺町（詳細はご相談時にご案内）</td></tr>
+          <tr><th>交通</th><td>名鉄名古屋本線「東岡崎」駅 徒歩8分</td></tr>
+          <tr><th>間取り / 専有面積</th><td>3LDK / 71.2㎡（壁芯）</td></tr>
+          <tr><th>築年月</th><td>2008年3月</td></tr>
+        </table>
+        <table class="spec">
+          <tr><th>管理費 / 修繕積立金</th><td class="num">12,500円 / 9,800円（月額）</td></tr>
+          <tr><th>土地権利</th><td>所有権</td></tr>
+          <tr><th>取引態様</th><td>媒介</td></tr>
+          <tr><th>情報更新日</th><td>2026年7月5日</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="d-sec">
+      <h2>よくあるご質問<small>FAQ</small></h2>
+      <details class="faq">
+        <summary>エントリーすると購入しなければいけませんか？</summary>
+        <div class="a">いいえ。エントリーは売買契約の申込みではなく、優先的にご相談いただける権利の申込みです。期間中はいつでも撤回でき、費用もかかりません。</div>
+      </details>
+      <details class="faq">
+        <summary>優先購入の順番はどのように決まりますか？</summary>
+        <div class="a">事前に公開しているルール（資金準備状況を第一基準、エントリー日時を第二基準）に基づいて機械的に決定し、担当者が確認のうえ確定します。入札や価格競争は行いません。</div>
+      </details>
+      <details class="faq">
+        <summary>住宅ローンの相談はできますか？</summary>
+        <div class="a">はい。エントリー前の事前審査のご案内から、ご契約までの資金計画まで担当者がサポートします。事前審査済みの方は優先順位の決定時に考慮されます。</div>
+      </details>
+    </div>
+  </div>
+
+  <div class="contact-band">
+    <div class="wrap">
+      <div class="t">この物件に関するご相談・エントリーはこちら</div>
+      <div class="btns">
+        <button class="btn ghost-gold" onclick="toast('資料請求フォームへ（プロトタイプ対象外）')">資料請求する</button>
+        <button class="btn gold" onclick="go('entry')">優先購入エントリー</button>
+      </div>
     </div>
   </div>
 
   <div class="cta-bar visible">
-    <div><span class="price num">3,280<small style="font-size:12px">万円</small></span></div>
+    <div class="p num">3,280<small>万円</small></div>
     <button class="btn" onclick="go('entry')">優先購入エントリー</button>
   </div>
 
-  <footer class="site-foot" style="padding-bottom:120px">
+  <footer class="site-foot" style="margin-top:0; padding-bottom:120px">
     <div class="wrap">
-      <span>株式会社Life Shift｜宅地建物取引業 愛知県知事（1）第00000号｜取引態様: 媒介</span>
-      <span style="opacity:.7">※本画面はプロトタイプです。物件情報はすべて架空のものです。</span>
+      <div class="legal" style="border-top:0; padding-top:0; margin-top:0">
+        株式会社Life Shift｜宅地建物取引業 愛知県知事（1）第00000号｜取引態様: 媒介<br>
+        ※本画面はプロトタイプです。物件情報はすべて架空のものです。
+      </div>
     </div>
   </footer>
 </section>
@@ -738,15 +862,18 @@
 <section id="scr-entry" class="screen">
   <header class="site-head">
     <div class="wrap">
-      <span class="wordmark" style="cursor:pointer" onclick="go('top')">LIFE SHIFT <em>SELECT</em></span>
+      <div class="brand" onclick="go('top')">
+        <div class="monogram">LS</div>
+        <div class="t"><div class="n">LIFE SHIFT SELECT</div><div class="tg">資産価値が続く、住まいを選ぶ。</div></div>
+      </div>
       <nav><a href="#" onclick="go('detail');return false">物件ページに戻る</a></nav>
     </div>
   </header>
 
   <div class="entry-wrap">
-    <span class="kicker">Priority Entry</span>
+    <span class="kicker">PRIORITY ENTRY</span>
     <h2 class="sec">優先購入エントリー</h2>
-    <p style="font-size:13px;color:var(--sub);margin-top:6px">グランレジデンス東岡崎 302号室｜3,280万円</p>
+    <p style="font-size:13px;color:var(--sub);margin-top:6px">岡崎市 明大寺の邸宅（グランレジデンス東岡崎 302号室）｜3,280万円</p>
 
     <div class="steps" id="entrySteps">
       <div class="s on">1. 内容の確認</div>
@@ -754,7 +881,6 @@
       <div class="s">3. 確認・送信</div>
     </div>
 
-    <!-- Step 1 -->
     <div class="panel" id="e-step1">
       <div class="notice">
         <b>エントリーは売買契約の申込みではありません</b>
@@ -774,7 +900,6 @@
       </div>
     </div>
 
-    <!-- Step 2 -->
     <div class="panel" id="e-step2" hidden>
       <h2>購入計画についてお聞かせください</h2>
       <fieldset>
@@ -802,7 +927,6 @@
       </div>
     </div>
 
-    <!-- Step 3 -->
     <div class="panel" id="e-step3" hidden>
       <h2>入力内容のご確認</h2>
       <div class="kv"><span class="k">物件</span><span class="v">グランレジデンス東岡崎 302号室</span></div>
@@ -813,14 +937,13 @@
       <label class="agree"><input type="checkbox" id="agreeCk"><span><a href="#" onclick="return false">利用規約</a>および<a href="#" onclick="return false">優先購入エントリーの取扱い</a>に同意します。エントリーが売買契約の申込みではないことを確認しました。</span></label>
       <div class="actions">
         <button class="btn ghost" onclick="entryStep(2)">戻る</button>
-        <button class="btn" onclick="entrySubmit()">エントリーを送信する</button>
+        <button class="btn gold" onclick="entrySubmit()">エントリーを送信する</button>
       </div>
     </div>
 
-    <!-- Done -->
     <div class="panel done" id="e-done" hidden>
       <div class="ok-mark"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 6.5"/></svg></div>
-      <h2 class="sec" style="font-size:20px">エントリーを受け付けました</h2>
+      <h2 class="sec" style="font-size:21px;text-align:center">エントリーを受け付けました</h2>
       <p>エントリー期間終了後（7月22日まで）に、担当者よりご連絡します。エントリーの撤回はマイページからいつでも行えます。</p>
       <div class="actions" style="justify-content:center">
         <button class="btn ghost" onclick="go('top')">TOPへ戻る</button>
@@ -833,7 +956,10 @@
 <section id="scr-admin" class="screen">
   <header class="admin-head">
     <div class="wrap">
-      <span class="wordmark" style="font-size:12px">LIFE SHIFT <em>SELECT</em></span>
+      <div class="brand">
+        <div class="monogram">LS</div>
+        <div class="t"><div class="n">LIFE SHIFT SELECT</div></div>
+      </div>
       <span class="admin-tag">運営管理</span>
       <span class="who">佐々木 遥（ops）｜すべての操作は監査ログに記録されます</span>
     </div>
@@ -849,7 +975,7 @@
     </div>
 
     <div class="list-card">
-      <header><h3>審査キュー</h3><span class="cnt">AI評価済み・判断待ち 3件</span></header>
+      <header><h3 class="serif">審査キュー</h3><span class="cnt">AI評価済み・判断待ち 3件</span></header>
       <div class="row">
         <span class="name">グランパーク刈谷 805号室</span>
         <span class="meta">東海ハウジング株式会社｜7/4 受付</span>
@@ -863,7 +989,7 @@
           <div class="rv">
             <h4>物件情報（概要書からのAI抽出）</h4>
             <table class="spec">
-              <tr><th>価格</th><td class="num">3,880万円 <span class="conf" style="color:var(--sub);font-size:11px">信頼度 99%</span></td></tr>
+              <tr><th>価格</th><td class="num">3,880万円 <span style="color:var(--sub);font-size:11px">信頼度 99%</span></td></tr>
               <tr><th>専有面積</th><td class="num">74.0㎡</td></tr>
               <tr><th>築年月</th><td>2015年10月</td></tr>
               <tr><th>修繕積立金</th><td class="num" style="background:var(--hold-bg)">9,200円 <span style="color:var(--hold);font-size:11px;font-weight:700">要確認（信頼度 82%）</span></td></tr>
@@ -872,7 +998,7 @@
             <div class="flag">修繕積立金の抽出信頼度が低いため、概要書の原本と照合してください。</div>
           </div>
           <div class="rv">
-            <h4>AI評価（engine v1.0.0）</h4>
+            <h4>AI評価（ENGINE v1.0.0）</h4>
             <div class="total-score"><span class="v num">87.5</span><span class="r">ランクA 相当</span></div>
             <div class="bar-row"><span class="lbl">立地</span><div class="bar"><i style="width:92%"></i></div><span class="vv num">92</span></div>
             <div class="bar-row"><span class="lbl">資産性</span><div class="bar"><i style="width:88%"></i></div><span class="vv num">88</span></div>
@@ -885,7 +1011,7 @@
             </ul>
           </div>
           <div class="decide">
-            <h4 style="font-size:12px;letter-spacing:.1em;color:var(--sub)">判断（最終判断は担当者が行います）</h4>
+            <h4 style="font-size:11px;letter-spacing:.18em;color:var(--sub)">判断（最終判断は担当者が行います）</h4>
             <label for="reason" style="font-size:13px;font-weight:700;display:block;margin-top:10px">判断理由（必須・監査証跡）</label>
             <textarea id="reason" placeholder="例: 価格・管理状態ともに基準を満たす。修繕積立金は原本照合済み。"></textarea>
             <div class="err" id="reasonErr">判断理由を入力してください（監査証跡として必須です）。</div>
@@ -910,13 +1036,13 @@
     </div>
 
     <div class="list-card">
-      <header><h3>エントリー管理</h3><span class="cnt">グランレジデンス東岡崎 302号室｜期間終了・優先順位の確定待ち</span></header>
+      <header><h3 class="serif">エントリー管理</h3><span class="cnt">グランレジデンス東岡崎 302号室｜期間終了・優先順位の確定待ち</span></header>
       <ul class="prio">
         <li><span class="n num">1</span><span><b>山田様</b><span class="why">　現金購入</span></span><span class="when num">6/28 14:02 エントリー</span></li>
         <li><span class="n num">2</span><span><b>佐藤様</b><span class="why">　ローン・事前審査承認済み</span></span><span class="when num">6/25 09:11 エントリー</span></li>
         <li><span class="n num">3</span><span><b>鈴木様</b><span class="why">　ローン・事前審査未実施</span></span><span class="when num">6/24 18:30 エントリー</span></li>
       </ul>
-      <div class="row" style="background:#F5F4F0">
+      <div class="row" style="background:#F1EFE8">
         <span class="meta">ルール: ① 資金準備状況 ② エントリー日時（先着）｜適用ルールはスナップショット保存されます</span>
         <span class="right"><button class="btn sm" id="prioBtn" onclick="prioConfirm()">この順位で優先権を確定</button></span>
       </div>
@@ -928,22 +1054,25 @@
 <section id="scr-partner" class="screen">
   <header class="admin-head">
     <div class="wrap">
-      <span class="wordmark" style="font-size:12px">LIFE SHIFT <em>SELECT</em></span>
-      <span class="admin-tag partner">管理会社ポータル</span>
+      <div class="brand">
+        <div class="monogram">LS</div>
+        <div class="t"><div class="n">LIFE SHIFT SELECT</div></div>
+      </div>
+      <span class="admin-tag">管理会社ポータル</span>
       <span class="who">東海ハウジング株式会社｜スタンダードプラン</span>
     </div>
   </header>
 
   <div class="wrap" style="padding-bottom:96px">
-    <section class="block" style="padding-top:40px">
+    <section class="block" style="padding-top:44px">
       <div class="sec-head">
-        <div><span class="kicker">New Listing</span><h2 class="sec">新規掲載</h2></div>
+        <div><span class="kicker">NEW LISTING</span><h2 class="sec">新規掲載</h2></div>
       </div>
 
       <div class="drop" id="dropZone" onclick="startParse()" role="button" tabindex="0"
            onkeydown="if(event.key==='Enter')startParse()">
         <b>物件概要書をここにドロップ</b>
-        PDF・画像に対応。AIが価格・所在地・面積などを自動で読み取ります（所要 1〜2分）。<br>
+        PDF・画像に対応。AIが価格・所在地・面積などを自動で読み取ります(所要 1〜2分)。<br>
         自社サイトURLの入力・フォーム手入力も選べます。
       </div>
 
@@ -954,7 +1083,7 @@
 
       <div class="extract" id="extract">
         <div class="list-card" style="margin-bottom:16px">
-          <header><h3>AI抽出結果の確認</h3><span class="cnt">黄色の項目は原本との照合をお願いします</span></header>
+          <header><h3 class="serif">AI抽出結果の確認</h3><span class="cnt">黄色の項目は原本との照合をお願いします</span></header>
           <table>
             <tr><th>物件名</th><td>グランパーク刈谷 805号室 <span class="conf">信頼度 98%</span></td></tr>
             <tr><th>価格</th><td class="num">3,880万円 <span class="conf">信頼度 99%</span></td></tr>
@@ -971,9 +1100,9 @@
       </div>
     </section>
 
-    <section class="block" style="padding-top:48px">
+    <section class="block" style="padding-top:52px">
       <div class="sec-head">
-        <div><span class="kicker">Listings</span><h2 class="sec">掲載中の物件</h2></div>
+        <div><span class="kicker">LISTINGS</span><h2 class="sec">掲載中の物件</h2></div>
       </div>
       <div class="list-card">
         <div class="row">
@@ -1034,7 +1163,6 @@
     el.classList.toggle('on');
     toast(el.classList.contains('on')?'お気に入りに追加しました':'お気に入りから外しました');
   }
-  /* エントリーフロー */
   function entryStep(n){
     ['e-step1','e-step2','e-step3','e-done'].forEach(function(id,i){
       document.getElementById(id).hidden = (i+1)!==n;
@@ -1050,7 +1178,6 @@
     entryStep(4);
     document.getElementById('e-done').hidden=false;
   }
-  /* 運営管理 */
   function openReview(btn){
     var p=document.getElementById('reviewPanel');
     p.hidden=!p.hidden;
@@ -1069,7 +1196,6 @@
     b.disabled=true; b.textContent='確定済み・第1順位に案内送信済み（回答期限 7/13）';
     toast('優先権を確定しました。山田様に案内を送信します（ルールをスナップショット保存）');
   }
-  /* 管理会社ポータル */
   function startParse(){
     document.getElementById('dropZone').style.display='none';
     document.getElementById('parsing').style.display='block';
