@@ -178,6 +178,41 @@
   .criteria .n{font-size:13px; font-weight:700; letter-spacing:.1em; color:var(--navy-ink)}
   .criteria .v{font-family:var(--serif); font-size:26px; color:var(--navy); margin-top:4px}
   .criteria .v small{font-size:12px; letter-spacing:.08em}
+  .criteria .d{font-size:11.5px; color:var(--sub); line-height:1.7; margin-top:8px; text-align:left}
+  .pass-line{
+    display:flex; gap:16px; align-items:center; justify-content:center; flex-wrap:wrap;
+    background:var(--navy); color:#fff; padding:20px 26px; margin-top:16px; text-align:center;
+  }
+  .pass-line .big{font-family:var(--serif); font-size:15px; letter-spacing:.08em}
+  .pass-line .big b{color:var(--gold-bright); font-size:22px; margin:0 4px}
+  .pass-line .sep{width:1px; height:26px; background:rgba(255,255,255,.2)}
+  @media(max-width:640px){.pass-line .sep{display:none}}
+
+  /* 選ばれる理由 */
+  .why-flag{
+    display:grid; grid-template-columns:1fr 1fr; gap:44px; align-items:center;
+    background:var(--paper); border:1px solid var(--line); padding:40px 44px;
+  }
+  @media(max-width:860px){.why-flag{grid-template-columns:1fr; gap:28px; padding:30px 24px}}
+  .why-flag .tag{display:inline-block; font-size:11px; letter-spacing:.16em; color:var(--gold); font-weight:700; margin-bottom:12px}
+  .why-flag h3{font-size:22px; color:var(--navy-ink); line-height:1.5; margin-bottom:14px; text-wrap:balance}
+  .why-flag p{font-size:13.5px; color:var(--ink); line-height:2}
+  .why-flag .fig{background:#FBFAF6; border:1px solid var(--line); padding:20px 18px 14px}
+  .why-flag .fig figcaption{font-size:11px; color:var(--sub); text-align:center; margin-top:8px; line-height:1.7}
+  .why-cards{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:20px}
+  @media(max-width:760px){.why-cards{grid-template-columns:1fr}}
+  .why-card{background:var(--paper); border:1px solid var(--line); padding:28px 26px}
+  .why-card .ic{width:34px; height:34px; color:var(--gold); margin-bottom:12px}
+  .why-card h4{font-family:var(--serif); font-size:16px; color:var(--navy-ink); letter-spacing:.06em; margin-bottom:8px}
+  .why-card p{font-size:12.5px; color:var(--sub); line-height:1.9}
+
+  /* 私たちの約束（暗色） */
+  .promise-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.12); margin-top:34px}
+  @media(max-width:760px){.promise-grid{grid-template-columns:1fr}}
+  .promise{background:var(--navy-deep); padding:30px 26px}
+  .promise .no{font-family:var(--serif); font-size:13px; color:var(--gold-bright); letter-spacing:.2em; margin-bottom:12px}
+  .promise h4{font-family:var(--serif); font-size:17px; color:#fff; letter-spacing:.06em; margin-bottom:10px}
+  .promise p{font-size:12.5px; color:#AEB8C4; line-height:1.95}
 
   /* エリアカード */
   .areas{display:grid; grid-template-columns:repeat(2,1fr); gap:16px}
@@ -520,32 +555,101 @@
   <div class="wrap">
     <section class="block">
       <div class="sec-head">
-        <div><span class="kicker">CERTIFICATION</span><h2 class="sec">資産価値が続く理由</h2>
-        <p class="sec-lead">5つの視点で評価し、基準を満たした物件だけを「Life Shift認定」として掲載します。</p></div>
+        <div><span class="kicker">WHY LIFE SHIFT SELECT</span><h2 class="sec">選ばれる理由</h2>
+        <p class="sec-lead">なぜ「価値が続く住まい」だけを紹介できるのか。私たちの一番の強みからご説明します。</p></div>
+      </div>
+
+      <div class="why-flag">
+        <div>
+          <span class="tag">01 ｜ 一番の強み</span>
+          <h3>「地域の相場」と「損益分岐点」から、<br>“適正価格”だけを見極める。</h3>
+          <p>
+            その地域で実際にいくらで売れてきたのか——過去の販売データから<b>地域相場</b>を分析し、
+            さらに物件ごとに<b>損益分岐点</b>（将来売るときに損をしにくい価格ライン）を算出します。<br>
+            相場より割高な物件は、どれだけ見栄えが良くても掲載しません。
+            <b>「買ったあとも価値が続く適正価格」</b>の物件だけを認定する——それが私たちの核心です。
+          </p>
+        </div>
+        <figure class="fig">
+          <svg viewBox="0 0 480 210" role="img" aria-label="価格の適正ゾーンを示す図">
+            <!-- 適正ゾーン -->
+            <rect x="185" y="98" width="150" height="26" fill="#F3EBDB"/>
+            <!-- 割高ゾーン -->
+            <rect x="335" y="98" width="105" height="26" fill="#F4E7E2"/>
+            <!-- 軸 -->
+            <line x1="40" y1="124" x2="452" y2="124" stroke="#C9CDD3" stroke-width="1.5"/>
+            <path d="M452 124 L444 120 L444 128 Z" fill="#C9CDD3"/>
+            <text x="455" y="121" font-size="10" fill="#6E7883" font-family="sans-serif">価格</text>
+            <!-- 損益分岐点 tick -->
+            <line x1="185" y1="94" x2="185" y2="132" stroke="#25303D" stroke-width="1.5" stroke-dasharray="3 3"/>
+            <text x="185" y="150" font-size="10.5" fill="#25303D" text-anchor="middle" font-family="sans-serif" font-weight="bold">損益分岐点</text>
+            <text x="185" y="164" font-size="9" fill="#6E7883" text-anchor="middle" font-family="sans-serif">これ以上で安心</text>
+            <!-- 地域相場 tick -->
+            <line x1="335" y1="94" x2="335" y2="132" stroke="#25303D" stroke-width="1.5" stroke-dasharray="3 3"/>
+            <text x="335" y="150" font-size="10.5" fill="#25303D" text-anchor="middle" font-family="sans-serif" font-weight="bold">地域相場</text>
+            <text x="335" y="164" font-size="9" fill="#6E7883" text-anchor="middle" font-family="sans-serif">これ以下で割安</text>
+            <!-- ゾーンラベル -->
+            <text x="260" y="90" font-size="11" fill="#9A7B34" text-anchor="middle" font-family="sans-serif" font-weight="bold">適正価格ゾーン</text>
+            <text x="387" y="90" font-size="10" fill="#A0564A" text-anchor="middle" font-family="sans-serif">割高｜掲載しません</text>
+            <!-- 認定価格マーカー -->
+            <line x1="255" y1="60" x2="255" y2="111" stroke="#B08D4F" stroke-width="1.2"/>
+            <circle cx="255" cy="111" r="7" fill="#B08D4F" stroke="#fff" stroke-width="2"/>
+            <rect x="205" y="42" width="100" height="20" rx="2" fill="#13253C"/>
+            <text x="255" y="56" font-size="11" fill="#fff" text-anchor="middle" font-family="sans-serif" font-weight="bold">認定物件の価格</text>
+          </svg>
+          <figcaption>相場より割高でなく、将来の売却でも損をしにくい価格帯だけを「認定」します。</figcaption>
+        </figure>
+      </div>
+
+      <div class="why-cards">
+        <div class="why-card">
+          <svg class="ic" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M17 4l11 4v7c0 8-5 13-11 15C11 28 6 23 6 15V8z"/><path d="M12 16l3.5 3.5L23 12"/></svg>
+          <h4>02 ｜ 5つの基準＋人の審査</h4>
+          <p>立地・資産性・建物・管理・将来性の5視点で採点し、<b>総合85点以上</b>かつ社内審査を通過した物件だけを掲載。最終判断は必ず人が行います。</p>
+        </div>
+        <div class="why-card">
+          <svg class="ic" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="17" cy="12" r="5.5"/><path d="M6 29c1.5-6 6-9 11-9s9.5 3 11 9"/></svg>
+          <h4>03 ｜ 顔の見える専門家が、正直に</h4>
+          <p>担当の宅建士が実名で、良い点も気になる点も包み隠さずお伝えします。<b>煽らず、急かさず</b>。あなたが納得して決めるための情報を提供します。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="sec-head">
+        <div><span class="kicker">CRITERIA</span><h2 class="sec">どんな基準で評価しているか</h2>
+        <p class="sec-lead">5つの視点で物件を採点します。何を見ているかを、包み隠さずお伝えします。</p></div>
       </div>
       <div class="criteria">
         <div class="c">
           <svg class="ic" viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M19 33c7-7 11-12 11-17a11 11 0 10-22 0c0 5 4 10 11 17z"/><circle cx="19" cy="15" r="4"/></svg>
-          <div class="n">立地評価</div><div class="v">92<small>点平均</small></div>
+          <div class="n">立地評価</div><div class="d">駅からの距離・生活利便・エリアの希少性・ハザードリスク</div>
         </div>
         <div class="c">
           <svg class="ic" viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 32 13 24l6 5 11-13"/><path d="M25 16h5v5"/><path d="M4 34h30"/></svg>
-          <div class="n">資産性評価</div><div class="v">88<small>点平均</small></div>
+          <div class="n">資産性評価</div><div class="d">地域相場との比較・損益分岐点・価格の適正さ（一番の重点）</div>
         </div>
         <div class="c">
           <svg class="ic" viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="8" y="12" width="10" height="20"/><rect x="20" y="6" width="10" height="26"/><path d="M5 32h28M11 16h4M11 20h4M23 10h4M23 14h4M23 18h4"/></svg>
-          <div class="n">建物評価</div><div class="v">86<small>点平均</small></div>
+          <div class="n">建物評価</div><div class="d">構造・築年数・施工品質・共用部の状態・耐震性</div>
         </div>
         <div class="c">
           <svg class="ic" viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M8 8h16v24H8zM24 14h7v18h-7z"/><path d="M12 13h3M12 18h3M12 23h3M19 13h1M19 18h1M19 23h1M5 32h29"/></svg>
-          <div class="n">管理品質</div><div class="v">84<small>点平均</small></div>
+          <div class="n">管理品質評価</div><div class="d">管理体制・修繕計画・修繕積立金の健全性・管理組合の運営</div>
         </div>
         <div class="c">
           <svg class="ic" viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M19 32c-8-3-12-9-11-18 7-1 13 1 16 6s0 10-5 12z"/><path d="M12 30c2-8 7-13 13-15"/></svg>
-          <div class="n">環境評価</div><div class="v">85<small>点平均</small></div>
+          <div class="n">将来性評価</div><div class="d">人口動態・再開発計画・インフラ整備から将来の価値を予測</div>
         </div>
       </div>
-      <p style="font-size:11.5px;color:var(--sub);margin-top:12px">※ 総合評価85点以上かつ社内審査を通過した物件のみを掲載しています。点数は掲載物件の平均値（イメージ）。詳細な採点基準は担当者よりご説明します。</p>
+      <div class="pass-line">
+        <div class="big">総合評価 <b>85</b>点以上</div>
+        <div class="sep"></div>
+        <div class="big">＋ 社内審査 通過</div>
+        <div class="sep"></div>
+        <div class="big">＝ <b>Life Shift認定</b></div>
+      </div>
+      <p style="font-size:11.5px;color:var(--sub);margin-top:12px">※ 採点ロジックや配点の詳細は非公開です（ノウハウ保護のため）。認定ランク・総合評価・コメントは公開し、ご相談時に担当の宅建士が根拠をご説明します。</p>
     </section>
 
     <section class="block">
@@ -591,7 +695,7 @@
             <div class="price">価格<b class="num">3,280</b><small>万円</small></div>
             <div class="spec"><span>3LDK / 71.2㎡ / 築2008年</span></div>
             <div class="spec"><span>名鉄「東岡崎」駅 徒歩8分</span></div>
-            <div class="foot"><span class="metric">現在12名が検討中</span></div>
+            <div class="foot"><span class="metric">駅前再開発エリア｜大規模修繕済み</span></div>
           </div>
         </article>
         <article class="card" onclick="go('detail')">
@@ -604,7 +708,7 @@
             <div class="price">価格<b class="num">4,180</b><small>万円</small></div>
             <div class="spec"><span>2LDK / 58.4㎡ / 築2019年</span></div>
             <div class="spec"><span>「名古屋」駅 徒歩9分</span></div>
-            <div class="foot"><span class="metric">お気に入り 328</span></div>
+            <div class="foot"><span class="metric">名駅徒歩圏の希少立地</span></div>
           </div>
         </article>
         <article class="card" onclick="go('detail')">
@@ -618,7 +722,7 @@
             <div class="price">価格<b class="num">5,480</b><small>万円</small></div>
             <div class="spec"><span>3LDK / 82.6㎡ / 築2016年</span></div>
             <div class="spec"><span>「高岳」駅 徒歩6分</span></div>
-            <div class="foot"><span class="metric">人気ランキング 1位</span></div>
+            <div class="foot"><span class="metric">文教エリア｜資産性ランクS</span></div>
           </div>
         </article>
       </div>
@@ -627,27 +731,27 @@
 
   <div class="dark-band">
     <div class="wrap">
-      <span class="kicker">REPORT</span>
-      <h2 class="sec">認定評価レポートの一例</h2>
-      <div class="grid">
-        <div class="report-mock">
-          <div class="rm-h">Life Shift 認定評価レポート<span>CONFIDENTIAL</span></div>
-          <div class="rm-row"><div class="ph city-day"></div><div class="rm-lines"><i></i><i></i><i></i></div></div>
-          <div class="rm-row"><div class="ph interior"></div><div class="rm-lines"><i></i><i></i><i></i></div></div>
-          <div class="rm-row"><div class="ph city-night"></div><div class="rm-lines"><i></i><i></i><i></i></div></div>
+      <span class="kicker">OUR PROMISE</span>
+      <h2 class="sec">私たちの約束</h2>
+      <p class="sec-lead" style="color:#AEB8C4;max-width:60ch">住まいは、人生で一番大きな買い物です。だからこそ、売り込むのではなく、正直に伝えることを約束します。</p>
+      <div class="promise-grid">
+        <div class="promise">
+          <div class="no">01</div>
+          <h4>正直に、お伝えします</h4>
+          <p>良い点だけでなく、気になる点・注意点も必ず開示します。短所を隠さないことが、私たちの信頼のかたちです。</p>
         </div>
-        <div>
-          <ul class="checks">
-            <li>エリアの将来価値予測</li>
-            <li>周辺相場の推移グラフ</li>
-            <li>再開発・インフラ計画情報</li>
-            <li>賃貸ニーズ・流動性の分析</li>
-            <li>総合評価と今後の見通し</li>
-          </ul>
-          <button class="btn gold arrow" onclick="toast('会員登録モーダルを表示します')">無料会員登録してレポートを見る　</button>
-          <p style="font-size:11.5px;opacity:.7;margin-top:14px">※ 詳細な採点基準・アルゴリズムは非公開です。ご相談時に担当者よりご説明します。</p>
+        <div class="promise">
+          <div class="no">02</div>
+          <h4>煽らず、急かしません</h4>
+          <p>順位争いやカウントダウンのような演出はしません。エントリーは契約ではなく、いつでも撤回できます。あなたのペースで、納得して決めてください。</p>
+        </div>
+        <div class="promise">
+          <div class="no">03</div>
+          <h4>顔の見える専門家が担当</h4>
+          <p>AIはあくまで補助。掲載の可否も、ご相談も、実名の宅建士が責任を持って対応します。最後まで同じ担当がサポートします。</p>
         </div>
       </div>
+      <p style="font-size:11.5px;color:#8B97A6;margin-top:20px">※ 認定物件には、相場分析・将来性・注意点をまとめた評価レポートをご用意し、ご相談時にご説明します。</p>
     </div>
   </div>
 
