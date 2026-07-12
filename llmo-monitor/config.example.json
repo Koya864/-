@@ -1,7 +1,8 @@
 {
   "target": {
     "name": "あなたの会社名",
-    "aliases": ["English Name", "略称"]
+    "aliases": ["English Name", "略称"],
+    "site": "yourcompany.co.jp"
   },
   "competitors": ["競合A", "競合B", "競合C"],
   "queries": [

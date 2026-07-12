@@ -2,3 +2,6 @@
 config.json
 results.csv
 *.csv
+*.db
+__pycache__/
+*.pyc
