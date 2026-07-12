@@ -41,9 +41,57 @@ def extract_images(page) -> list:
             try:
                 pdfimg = pikepdf.PdfImage(obj)
                 out.append((str(name), pdfimg.as_pil_image()))
-            except Exception as e:  # 特殊なエンコードはスキップして報告
+            except Exception:  # 特殊なエンコードはスキップして報告
                 out.append((str(name), None))
     return out
+
+
+def placement_sizes(page) -> dict:
+    """コンテンツストリームを解析し、各画像が紙面に置かれた実寸(pt)を返す。
+
+    { "/Im1": (幅pt, 高さpt), ... }。同じ画像が複数回置かれている場合は最大の配置を採用。
+    PDFの画像描画は「1×1の画像を cm 行列で拡大して Do」で行われるので、
+    描画時点の変換行列(CTM)の拡大成分が、その画像の紙面上のサイズになる。
+    """
+    try:
+        content = pikepdf.parse_content_stream(page)
+    except Exception:
+        return {}
+
+    sizes = {}
+    ctm = [1, 0, 0, 1, 0, 0]      # 現在の変換行列
+    stack = []
+    pending = ctm[:]
+
+    def mul(m, n):  # 行列の合成(PDFの順序)
+        a, b, c, d, e, f = m
+        a2, b2, c2, d2, e2, f2 = n
+        return [a*a2 + b*c2, a*b2 + b*d2,
+                c*a2 + d*c2, c*b2 + d*d2,
+                e*a2 + f*c2 + e2, e*b2 + f*d2 + f2]
+
+    for operands, operator in content:
+        op = str(operator)
+        if op == "q":
+            stack.append(ctm[:])
+        elif op == "Q":
+            if stack:
+                ctm = stack.pop()
+        elif op == "cm":
+            try:
+                m = [float(x) for x in operands]
+                ctm = mul(m, ctm)
+            except Exception:
+                pass
+        elif op == "Do":
+            name = str(operands[0])
+            # 画像は単位正方形。CTMの各軸のスケール = 紙面上のサイズ(pt)
+            w = (ctm[0] ** 2 + ctm[1] ** 2) ** 0.5
+            h = (ctm[2] ** 2 + ctm[3] ** 2) ** 0.5
+            prev = sizes.get(name)
+            if not prev or w * h > prev[0] * prev[1]:
+                sizes[name] = (w, h)
+    return sizes
 
 
 def check_pdf(path: Path, quiet: bool = False) -> dict:
@@ -61,18 +109,32 @@ def check_pdf(path: Path, quiet: bool = False) -> dict:
         page_info = {"page": i, "size_mm": (round(w_mm, 1), round(h_mm, 1)),
                      "is_a4": is_a4, "images": []}
 
+        placed = placement_sizes(page)
+        # フル画像(ページ全面の1枚もの)か、部品の重ね合わせかを判定
+        page_area_pt = w_pt * h_pt
+
         for name, img in extract_images(page):
             if img is None:
                 page_info["images"].append({"name": name, "error": "未対応エンコード"})
                 continue
+            # 紙面上の実配置サイズ(pt)。取れなければページ全面と仮定
+            pw_pt, ph_pt = placed.get(name, (w_pt, h_pt))
+            covers = (pw_pt * ph_pt) / page_area_pt   # ページ面積に占める割合
             # 実効dpi = 画像のピクセル数 ÷ 紙面に置かれたサイズ(インチ)
-            eff_dpi_x = img.width / (w_pt / PT_PER_INCH)
-            eff_dpi_y = img.height / (h_pt / PT_PER_INCH)
+            eff_dpi_x = img.width / (pw_pt / PT_PER_INCH) if pw_pt else 0
+            eff_dpi_y = img.height / (ph_pt / PT_PER_INCH) if ph_pt else 0
             eff_dpi = round(min(eff_dpi_x, eff_dpi_y))
+            # 紙面の1%未満しか占めない画像は、装飾/アイコン扱いで判定から除外
+            decorative = covers < 0.01
             page_info["images"].append({
                 "name": name, "px": (img.width, img.height),
+                "placed_mm": (round(pw_pt / PT_PER_INCH * 25.4, 1),
+                              round(ph_pt / PT_PER_INCH * 25.4, 1)),
+                "covers": covers, "decorative": decorative,
                 "mode": img.mode, "effective_dpi": eff_dpi,
             })
+            if decorative:
+                continue   # 小さな装飾は「編集部分」とみなして品質判定に含めない
             if eff_dpi < OK_DPI:
                 report["low_dpi"] = True
                 report["verdict_ok"] = False
@@ -101,6 +163,12 @@ def print_report(report: dict):
                 print(f"  画像 {im['name']}: {im['error']}")
                 continue
             dpi = im["effective_dpi"]
+            pm = im.get("placed_mm")
+            place = f"、配置 {pm[0]}×{pm[1]}mm" if pm else ""
+            if im.get("decorative"):
+                print(f"  画像 {im['name']}: {im['px'][0]}×{im['px'][1]}px{place} "
+                      f"→ 小さな装飾要素のため品質判定から除外(実効 {dpi}dpi)")
+                continue
             if dpi >= OK_DPI:
                 grade = "OK — 印刷品質です"
             elif dpi >= SCREEN_DPI_HINT:
@@ -108,7 +176,7 @@ def print_report(report: dict):
             else:
                 grade = "NG — 画面用の解像度です。印刷するとはっきり荒れます"
             color = "CMYK(印刷用)" if im["mode"] == "CMYK" else f"{im['mode']}(画面用の色。印刷でくすむことがあります)"
-            print(f"  画像 {im['name']}: {im['px'][0]}×{im['px'][1]}px → 実効 {dpi}dpi: {grade}")
+            print(f"  画像 {im['name']}: {im['px'][0]}×{im['px'][1]}px{place} → 実効 {dpi}dpi: {grade}")
             print(f"    色モード: {color}")
     if report["verdict_ok"]:
         verdict = "このまま入稿できます"
@@ -121,38 +189,45 @@ def print_report(report: dict):
 
 
 def fix_pdf(path: Path, out: Path):
-    """低解像度ページ画像を高解像度化し、CMYK化してA4の入稿用PDFを再生成する。
+    """低解像度ページ画像を高解像度化し、CMYK化して入稿用PDFを再生成する。
 
+    用紙サイズは元PDFのまま保持する(A4に限らない)。
     プロトタイプでは Lanczos 補間で拡大する(製品版はAI超解像に差し替え予定)。
     """
     import img2pdf
 
     pdf = pikepdf.open(path)
-    page_jpegs = []
+    page_specs = []   # (jpegバイト, 幅pt, 高さpt)
     for i, page in enumerate(pdf.pages, 1):
+        box = [float(x) for x in page.mediabox]
+        w_pt, h_pt = box[2] - box[0], box[3] - box[1]
         images = [im for im in extract_images(page) if im[1] is not None]
         if not images:
-            print(f"[ページ {i}] ラスター画像なし — このページはそのままの品質で保持されます")
+            print(f"[ページ {i}] ラスター画像なし — このページは変換対象外です")
             continue
         # AI生成チラシはページ全面が1枚画像のことがほとんど。最大の画像を採用
         img = max((im for _, im in images), key=lambda x: x.width * x.height)
 
-        target_w = int(210 / 25.4 * PRINT_DPI)   # A4 @300dpi = 2480px
-        target_h = int(297 / 25.4 * PRINT_DPI)   # 3508px
-        if img.width < target_w:
-            print(f"[ページ {i}] {img.width}px → {target_w}px に高解像度化(Lanczos)…")
+        # 元の用紙サイズを300dpiで満たすのに必要なピクセル数
+        target_w = round(w_pt / PT_PER_INCH * PRINT_DPI)
+        target_h = round(h_pt / PT_PER_INCH * PRINT_DPI)
+        if img.width < target_w or img.height < target_h:
+            print(f"[ページ {i}] {img.width}×{img.height}px → "
+                  f"{target_w}×{target_h}px に高解像度化(Lanczos)…")
             img = img.resize((target_w, target_h), Image.LANCZOS)
-        print(f"[ページ {i}] RGB → CMYK に変換…")
+        print(f"[ページ {i}] {img.mode} → CMYK に変換…")
         cmyk = img.convert("CMYK")
         buf = io.BytesIO()
         cmyk.save(buf, format="JPEG", quality=95, dpi=(PRINT_DPI, PRINT_DPI))
-        page_jpegs.append(buf.getvalue())
+        page_specs.append((buf.getvalue(), w_pt, h_pt))
 
-    if not page_jpegs:
+    if not page_specs:
         sys.exit("変換対象の画像ページがありませんでした")
 
-    a4 = (img2pdf.mm_to_pt(210), img2pdf.mm_to_pt(297))
-    out.write_bytes(img2pdf.convert(page_jpegs, layout_fun=img2pdf.get_layout_fun(a4)))
+    # 各ページを元の用紙サイズ(pt)で配置
+    jpegs = [s[0] for s in page_specs]
+    layout = img2pdf.get_layout_fun((page_specs[0][1], page_specs[0][2]))
+    out.write_bytes(img2pdf.convert(jpegs, layout_fun=layout))
     print(f"\n入稿用PDFを書き出しました: {out}")
     print("再診断:")
     check_pdf(out)
