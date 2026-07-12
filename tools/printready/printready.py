@@ -23,7 +23,7 @@ import zlib
 from pathlib import Path
 
 import pikepdf
-from PIL import Image
+from PIL import Image, ImageFilter
 
 PT_PER_INCH = 72.0
 PRINT_DPI = 300          # 商業印刷の標準
@@ -188,11 +188,27 @@ def print_report(report: dict):
     print("\n判定:", verdict)
 
 
-def fix_pdf(path: Path, out: Path):
+def upscale(img: Image.Image, size: tuple, enhance: bool) -> Image.Image:
+    """画像を size に拡大する。enhance=True なら輪郭を強調する。
+
+    - 単純拡大(Lanczos): なめらかだが元のボケがそのまま残る
+    - 強調拡大: Lanczos後にアンシャープマスクで輪郭を締める。
+      文字やQRコードなど「本来くっきりしているべき境界」に効く。
+      ※これは後処理であり、失われた細部を復元する本物のAI超解像とは別物。
+    """
+    out = img.resize(size, Image.LANCZOS)
+    if enhance:
+        out = out.filter(ImageFilter.UnsharpMask(radius=3, percent=140, threshold=2))
+        out = out.filter(ImageFilter.UnsharpMask(radius=1, percent=90, threshold=1))
+    return out
+
+
+def fix_pdf(path: Path, out: Path, enhance: bool = False):
     """低解像度ページ画像を高解像度化し、CMYK化して入稿用PDFを再生成する。
 
     用紙サイズは元PDFのまま保持する(A4に限らない)。
-    プロトタイプでは Lanczos 補間で拡大する(製品版はAI超解像に差し替え予定)。
+    enhance=True で輪郭強調を併用(QRコード・文字の多いチラシ向け)。
+    ※真のAI超解像は本番環境で別途組み込む(細部の復元はここでは行わない)。
     """
     import img2pdf
 
@@ -212,9 +228,10 @@ def fix_pdf(path: Path, out: Path):
         target_w = round(w_pt / PT_PER_INCH * PRINT_DPI)
         target_h = round(h_pt / PT_PER_INCH * PRINT_DPI)
         if img.width < target_w or img.height < target_h:
+            mode_note = "強調拡大" if enhance else "Lanczos"
             print(f"[ページ {i}] {img.width}×{img.height}px → "
-                  f"{target_w}×{target_h}px に高解像度化(Lanczos)…")
-            img = img.resize((target_w, target_h), Image.LANCZOS)
+                  f"{target_w}×{target_h}px に高解像度化({mode_note})…")
+            img = upscale(img, (target_w, target_h), enhance)
         print(f"[ページ {i}] {img.mode} → CMYK に変換…")
         cmyk = img.convert("CMYK")
         buf = io.BytesIO()
@@ -238,6 +255,8 @@ def main():
     ap.add_argument("command", choices=["check", "fix"], help="check=診断のみ / fix=入稿用に変換")
     ap.add_argument("input", help="対象のPDF")
     ap.add_argument("--out", default=None, help="fix時の出力先(既定: <名前>-print.pdf)")
+    ap.add_argument("--enhance", action="store_true",
+                    help="輪郭を強調して拡大(QRコード・文字の多いチラシ向け)")
     args = ap.parse_args()
 
     src = Path(args.input).resolve()
@@ -250,7 +269,7 @@ def main():
         out = Path(args.out).resolve() if args.out else src.with_name(src.stem + "-print.pdf")
         check_pdf(src)
         print("\n--- 変換を開始します ---")
-        fix_pdf(src, out)
+        fix_pdf(src, out, enhance=args.enhance)
 
 
 if __name__ == "__main__":
