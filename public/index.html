@@ -199,6 +199,68 @@
 
   footer { margin-top: 52px; font-size: 12px; color: var(--faint); border-top: 1px solid var(--line);
            padding-top: 18px; }
+
+  /* ===== LP セクション ===== */
+  .lp{margin-top:72px;}
+  .lp-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--faint);margin-bottom:12px;}
+  .lp h2{font-size:clamp(22px,4vw,30px);font-weight:600;letter-spacing:.01em;margin:0 0 10px;text-wrap:balance;}
+  .lp h2 .g{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .lp .p{color:var(--muted);font-size:14.5px;max-width:40em;margin:0;}
+  .divider{height:1px;background:var(--line);margin:64px 0 0;}
+
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px;}
+  @media(max-width:620px){.steps{grid-template-columns:1fr;}}
+  .step{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:20px;}
+  .step .n{font-family:var(--mono);font-size:12px;color:var(--cyan);letter-spacing:.1em;}
+  .step h3{font-size:16px;margin:8px 0 6px;}
+  .step p{font-size:13px;color:var(--muted);margin:0;}
+
+  .checks{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px;}
+  @media(max-width:620px){.checks{grid-template-columns:1fr;}}
+  .check{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;
+    background:var(--panel);padding:15px 16px;}
+  .check .ic{flex:0 0 auto;width:26px;height:26px;border-radius:7px;display:grid;place-content:center;
+    font-size:13px;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);}
+  .check b{font-size:14px;display:block;margin-bottom:2px;}
+  .check span{font-size:12.5px;color:var(--muted);}
+  .sev-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle;}
+
+  .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px;}
+  @media(max-width:720px){.plans{grid-template-columns:1fr;}}
+  .plan{border:1px solid var(--line);border-radius:16px;background:var(--panel);padding:24px 22px;display:flex;flex-direction:column;}
+  .plan.featured{border-color:rgba(34,211,238,.4);box-shadow:0 0 0 1px rgba(34,211,238,.15),0 24px 60px -36px rgba(34,211,238,.3);}
+  .plan .tag{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--faint);}
+  .plan.featured .tag{color:var(--cyan);}
+  .plan .price{font-size:30px;font-weight:700;margin:10px 0 2px;font-variant-numeric:tabular-nums;}
+  .plan .price small{font-size:13px;color:var(--muted);font-weight:400;}
+  .plan .note{font-size:12px;color:var(--faint);min-height:32px;}
+  .plan ul{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:9px;}
+  .plan li{font-size:13px;color:var(--text);padding-left:22px;position:relative;}
+  .plan li::before{content:"✓";position:absolute;left:0;color:var(--cyan);font-weight:700;}
+  .plan li.muted{color:var(--faint);}.plan li.muted::before{content:"–";color:var(--faint);}
+  .pill-free{align-self:flex-start;margin-top:16px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+    color:var(--ok);background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);border-radius:99px;padding:5px 14px;}
+
+  .faq{margin-top:22px;display:grid;gap:10px;}
+  .faq details{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:2px 18px;}
+  .faq summary{cursor:pointer;font-size:14.5px;font-weight:600;padding:14px 0;list-style:none;position:relative;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq summary::after{content:"+";position:absolute;right:0;color:var(--cyan);font-size:18px;}
+  .faq details[open] summary::after{content:"–";}
+  .faq p{font-size:13.5px;color:var(--muted);margin:0 0 16px;}
+
+  .trust{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px;}
+  .trust .t{flex:1;min-width:180px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:16px 18px;}
+  .trust .t b{font-size:14px;display:block;margin-bottom:4px;}
+  .trust .t span{font-size:12.5px;color:var(--muted);}
+
+  .cta-band{margin-top:64px;text-align:center;border:1px solid var(--line);border-radius:18px;
+    background:linear-gradient(180deg,rgba(34,211,238,.06),rgba(139,92,246,.04));padding:40px 24px;}
+  .cta-band h2{font-size:24px;font-weight:600;margin:0 0 8px;}
+  .cta-band p{color:var(--muted);font-size:14px;margin:0 0 22px;}
+  .cta-btn{display:inline-block;padding:15px 32px;border-radius:12px;color:#fff;font-weight:700;font-size:15px;
+    text-decoration:none;background:linear-gradient(93deg,#0e7490,#4f46e5 55%,#7c3aed);cursor:pointer;border:none;}
+  .cta-btn:hover{filter:brightness(1.12);}
 </style>
 </head>
 <body>
@@ -252,6 +314,111 @@
       <span class="chip">日本語レポート</span>
       <span class="chip">修正手順つき</span>
       <span class="chip">NO SIGNUP</span>
+    </div>
+
+    <!-- ===== 課題 ===== -->
+    <section class="lp">
+      <div class="lp-eyebrow">THE PROBLEM / なぜ今これが必要か</div>
+      <h2>AIは「作る」を民主化した。<br>でも<span class="g">「安全に公開する」</span>は誰も見ていない。</h2>
+      <p class="p">ChatGPTやv0で作ったサイトには、作った本人も気づかない穴が残りがちです。APIキーの置き忘れ、無防備な管理画面、データベースの開けっ放し——。公開されたサイトは数時間以内に自動ボットのスキャンを受けます。攻撃は全自動なのに、非エンジニアの防御は手動(というか無)。この非対称を、LaunchGuardが埋めます。</p>
+    </section>
+
+    <!-- ===== 仕組み ===== -->
+    <section class="lp">
+      <div class="lp-eyebrow">HOW IT WORKS / 使い方は3ステップ</div>
+      <h2>URLを入れる。それだけ。</h2>
+      <div class="steps">
+        <div class="step"><div class="n">STEP 01</div><h3>URLを入力</h3><p>診断したい自分のサイトのURLを入れて、スキャンを開始。登録も設定も不要です。</p></div>
+        <div class="step"><div class="n">STEP 02</div><h3>30秒で走査</h3><p>HTTPS・セキュリティヘッダー・鍵の露出・XSS・フォームの安全性などを自動チェック。</p></div>
+        <div class="step"><div class="n">STEP 03</div><h3>日本語で受け取る</h3><p>「何が起きうるか」と「直し方」を、専門用語なしの日本語レポートで表示します。</p></div>
+      </div>
+    </section>
+
+    <!-- ===== 診断項目 ===== -->
+    <section class="lp">
+      <div class="lp-eyebrow">WHAT WE CHECK / 診断する「開いている窓」</div>
+      <h2>AI生成サイトで<span class="g">実際に頻発する</span>穴を狙い撃ち。</h2>
+      <div class="checks">
+        <div class="check"><div class="ic">🔑</div><div><b><span class="sev-dot" style="background:var(--crit)"></span>APIキーの置き忘れ</b><span>コードに書かれた鍵は公開後すぐボットに拾われ、他人に使い放題にされます。</span></div></div>
+        <div class="check"><div class="ic">📂</div><div><b><span class="sev-dot" style="background:var(--crit)"></span>公開厳禁ファイルの露出</b><span>.env や .git が誰でもダウンロードできる状態になっていないか確認します。</span></div></div>
+        <div class="check"><div class="ic">🗄️</div><div><b><span class="sev-dot" style="background:var(--crit)"></span>DBの開けっ放し</b><span>会員データが「全員閲覧可」のまま公開されていないか(権限設定)を診断。</span></div></div>
+        <div class="check"><div class="ic">📝</div><div><b><span class="sev-dot" style="background:var(--warn)"></span>フォームの入力検証漏れ</b><span>細工した入力でサイトを乗っ取られる(XSS)典型パターンを検出します。</span></div></div>
+        <div class="check"><div class="ic">🛡️</div><div><b><span class="sev-dot" style="background:var(--warn)"></span>セキュリティヘッダー欠如</b><span>数行で防げる攻撃に無防備な状態を見つけ、追加すべき設定を案内します。</span></div></div>
+        <div class="check"><div class="ic">🚪</div><div><b><span class="sev-dot" style="background:var(--warn)"></span>無認証の管理画面</b><span>/admin などが誰でも開ける状態になっていないかを確認します。</span></div></div>
+      </div>
+    </section>
+
+    <!-- ===== 料金 ===== -->
+    <section class="lp">
+      <div class="lp-eyebrow">PRICING / 料金</div>
+      <h2>診断は<span class="g">ずっと無料</span>。直すときだけ課金。</h2>
+      <p class="p">人は「問題を知ること」ではなく「問題が消えること」に払う。だから怖さの可視化は無料、解消から課金にしています。</p>
+      <div class="plans">
+        <div class="plan">
+          <div class="tag">DIAGNOSE</div>
+          <div class="price">¥0</div>
+          <div class="note">まずは自分のサイトの弱点を知る</div>
+          <ul>
+            <li>URL外形診断(何度でも)</li>
+            <li>スコア+検出リスト</li>
+            <li>「何が起きうるか」の説明</li>
+            <li class="muted">直し方の詳細</li>
+          </ul>
+        </div>
+        <div class="plan featured">
+          <div class="tag">FIX ● 単発</div>
+          <div class="price">¥1,980<small>〜 / サイト</small></div>
+          <div class="note">検出ごとの直し方+修正後の合格証</div>
+          <ul>
+            <li>全検出の具体的な修正手順</li>
+            <li>コピペで直せる修正指示文</li>
+            <li>修正後の再診断+合格バッジ</li>
+            <li>漏れた鍵の失効手順まで案内</li>
+          </ul>
+          <span class="pill-free">β期間は無料公開中</span>
+        </div>
+        <div class="plan">
+          <div class="tag">MONITOR ● 月額</div>
+          <div class="price">¥980<small>〜 / 月・サイト</small></div>
+          <div class="note">公開後も見張り続ける</div>
+          <ul>
+            <li>定期スキャンで常時監視</li>
+            <li>新しい脆弱性が出たら通知</li>
+            <li>必要なら修正手順を自動配信</li>
+            <li>「保護中」バッジを掲示可能</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 信頼 ===== -->
+    <section class="lp">
+      <div class="lp-eyebrow">SAFETY / 安心して使えます</div>
+      <h2>診断結果は、<span class="g">あなたにしか</span>見せません。</h2>
+      <div class="trust">
+        <div class="t"><b>結果は保存しません</b><span>診断はその場で表示するだけ。弱点情報をこちらに残しません。</span></div>
+        <div class="t"><b>攻撃はしません</b><span>通常のブラウザアクセスと同じ受動的チェックのみ。他人のサイトは対象外です。</span></div>
+        <div class="t"><b>深い診断は本人確認から</b><span>リポジトリ診断は所有者確認を通過した人だけ。弱点情報の保護のためです。</span></div>
+      </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section class="lp">
+      <div class="lp-eyebrow">FAQ / よくある質問</div>
+      <h2>気になること</h2>
+      <div class="faq">
+        <details><summary>エンジニアじゃなくても使えますか?</summary><p>はい、むしろ非エンジニア向けに作っています。結果は専門用語を使わず「何が起きうるか・どう直すか」を日本語で説明します。</p></details>
+        <details><summary>他人のサイトを診断できますか?</summary><p>できません。自分が管理するサイトの安全確認のためのツールです。無料診断は通常アクセスと同じ受動的チェックに限定し、深い診断は所有者確認を必須にしています。</p></details>
+        <details><summary>診断したデータはどうなりますか?</summary><p>その場で表示するだけで、サーバーには保存しません。あなたのサイトの弱点情報は、あなたにしか見せない設計です。</p></details>
+        <details><summary>WordPressやWix、Canvaで作ったサイトも診断できますか?</summary><p>公開URLがあれば外形診断は可能です。ノーコード製は比較的安全ですが、独自ドメインの設定やフォームの安全性など、確認できる項目があります。</p></details>
+      </div>
+    </section>
+
+    <!-- ===== CTA ===== -->
+    <div class="cta-band">
+      <h2>そのサイト、公開して大丈夫?</h2>
+      <p>30秒でわかります。登録不要・無料。</p>
+      <button class="cta-btn" id="cta-scan">▶ 上に戻って診断する</button>
     </div>
   </section>
 
@@ -487,6 +654,11 @@
   $("scanform").addEventListener("submit", runScan);
   $("back").addEventListener("click", reset);
   $("errback").addEventListener("click", reset);
+  const cta = $("cta-scan");
+  if (cta) cta.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+    setTimeout(() => $("url").focus(), reduced ? 0 : 400);
+  });
 })();
 </script>
 </body>
