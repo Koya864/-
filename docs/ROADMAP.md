@@ -135,3 +135,5 @@ Illustratorを持っていないがプロ向け納品データが必要な人
 - [x] Vercelデプロイ構成(public/ + api/scan.py)。あとはVercelでImportするだけ
 - [x] VectorPack プロトタイプ(PNG→SVG→.ai互換PDF)実装・品質確認済み(`tools/vectorpack/`)
 - [ ] VectorPack: Figma確認 → Adobe体験版で最終確認(ユーザー側)
+- [x] PrintReady プロトタイプ(診断→300dpi/CMYK変換→再診断)実装・動作確認済み(`tools/printready/`)
+- [ ] PrintReady: 実物のChatGPT製PDFで検証+変換前後を実際に印刷して見比べ(ユーザー側)
