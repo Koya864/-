@@ -261,6 +261,47 @@
   .cta-btn{display:inline-block;padding:15px 32px;border-radius:12px;color:#fff;font-weight:700;font-size:15px;
     text-decoration:none;background:linear-gradient(93deg,#0e7490,#4f46e5 55%,#7c3aed);cursor:pointer;border:none;}
   .cta-btn:hover{filter:brightness(1.12);}
+  .cta-sub{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:14px;letter-spacing:.06em;}
+
+  /* 緊急性バナー(ヒーロー直下) */
+  .urgency{display:flex;align-items:center;gap:12px;margin-top:20px;padding:12px 16px;border-radius:12px;
+    background:rgba(255,92,122,.07);border:1px solid rgba(255,92,122,.25);font-size:13px;color:var(--text);}
+  .urgency .dot{flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:var(--crit);}
+  @media(prefers-reduced-motion:no-preference){.urgency .dot{animation:pulse 1.4s ease-in-out infinite;}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,92,122,.5);}50%{box-shadow:0 0 0 6px rgba(255,92,122,0);}}}
+
+  /* 実際の事故カード */
+  .incidents{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px;}
+  @media(max-width:720px){.incidents{grid-template-columns:1fr;}}
+  .incident{border:1px solid rgba(255,92,122,.22);border-radius:14px;
+    background:linear-gradient(180deg,rgba(255,92,122,.05),transparent);padding:20px;}
+  .incident .cost{font-size:22px;font-weight:700;color:var(--crit);font-variant-numeric:tabular-nums;}
+  .incident h3{font-size:14.5px;margin:10px 0 6px;}
+  .incident p{font-size:12.5px;color:var(--muted);margin:0;}
+
+  /* 価値のアンカリング */
+  .anchor{margin-top:24px;border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden;}
+  .anchor-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;
+    border-bottom:1px solid var(--line);font-size:14px;}
+  .anchor-row:last-child{border-bottom:none;background:rgba(34,211,238,.06);}
+  .anchor-row .l{color:var(--muted);}
+  .anchor-row:last-child .l{color:var(--text);font-weight:700;}
+  .anchor-row .r{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums;color:var(--crit);white-space:nowrap;}
+  .anchor-row:last-child .r{color:var(--cyan);}
+
+  /* 実証バッジ */
+  .proof{margin-top:24px;display:flex;gap:14px;align-items:center;border:1px solid rgba(52,211,153,.3);
+    border-radius:14px;background:rgba(52,211,153,.06);padding:18px 20px;flex-wrap:wrap;}
+  .proof .big{font-size:30px;font-weight:800;color:var(--ok);font-variant-numeric:tabular-nums;line-height:1;}
+  .proof .txt{font-size:13px;color:var(--muted);flex:1;min-width:200px;}
+  .proof .txt b{color:var(--text);}
+
+  /* こんな人に */
+  .persona{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:24px;}
+  @media(max-width:620px){.persona{grid-template-columns:1fr;}}
+  .persona .row{display:flex;gap:11px;align-items:flex-start;font-size:14px;color:var(--text);
+    border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:14px 16px;}
+  .persona .row .ck{color:var(--cyan);font-weight:700;flex:0 0 auto;}
 </style>
 </head>
 <body>
@@ -290,7 +331,7 @@
   <section id="top">
     <div class="eyebrow">AI-BUILT SITE / SECURITY SCAN</div>
     <h1>そのサイト、<br>公開して<span class="g">大丈夫?</span></h1>
-    <p class="lead">AIで作ったサイトの「開いている窓」を30秒で走査。専門用語を使わず、<b>何が起きうるか</b>と<b>直し方</b>を日本語で報告します。</p>
+    <p class="lead">AIで作ったサイトには、作った本人も気づかない穴が残りがち。その「開いている窓」を30秒で走査し、専門用語なしで<b>何が起きうるか</b>と<b>直し方</b>を日本語で教えます。<b>登録不要・無料</b>。</p>
 
     <div class="console">
       <div class="console-head"><span class="dots"><i></i><i></i><i></i></span>SECURITY CONSOLE</div>
@@ -316,11 +357,39 @@
       <span class="chip">NO SIGNUP</span>
     </div>
 
+    <div class="urgency">
+      <span class="dot"></span>
+      <span>公開したサイトは、数時間以内に世界中の自動ボットからスキャンされ始めます。<b>「小さいサイトだから狙われない」は誤解です。</b></span>
+    </div>
+
     <!-- ===== 課題 ===== -->
     <section class="lp">
       <div class="lp-eyebrow">THE PROBLEM / なぜ今これが必要か</div>
       <h2>AIは「作る」を民主化した。<br>でも<span class="g">「安全に公開する」</span>は誰も見ていない。</h2>
       <p class="p">ChatGPTやv0で作ったサイトには、作った本人も気づかない穴が残りがちです。APIキーの置き忘れ、無防備な管理画面、データベースの開けっ放し——。公開されたサイトは数時間以内に自動ボットのスキャンを受けます。攻撃は全自動なのに、非エンジニアの防御は手動(というか無)。この非対称を、LaunchGuardが埋めます。</p>
+    </section>
+
+    <!-- ===== 実際の事故 ===== -->
+    <section class="lp">
+      <div class="lp-eyebrow">REAL INCIDENTS / 実際に起きている事故</div>
+      <h2>他人事だと思っていると、<span class="g">ある朝これが起きます。</span></h2>
+      <div class="incidents">
+        <div class="incident">
+          <div class="cost">数十万円</div>
+          <h3>APIキーが盗まれ、勝手に使われた</h3>
+          <p>コードに書いたAIのキーをボットが数分で発見。他人があなたの契約で使い放題になり、翌朝には高額請求が届く——実際にある事故です。</p>
+        </div>
+        <div class="incident">
+          <div class="cost">信用の失墜</div>
+          <h3>会員の個人情報が丸ごと漏れた</h3>
+          <p>データベースの権限が「全員閲覧可」のまま公開。会員Aが会員全員の登録情報を抜ける状態で、漏洩すれば謝罪と賠償の世界です。</p>
+        </div>
+        <div class="incident">
+          <div class="cost">サイト改ざん</div>
+          <h3>管理画面から乗っ取られた</h3>
+          <p>認証なしの /admin をURL推測で発見され、全データを操作されたり、訪問者を偽サイトへ飛ばされたりします。</p>
+        </div>
+      </div>
     </section>
 
     <!-- ===== 仕組み ===== -->
@@ -346,41 +415,50 @@
         <div class="check"><div class="ic">🛡️</div><div><b><span class="sev-dot" style="background:var(--warn)"></span>セキュリティヘッダー欠如</b><span>数行で防げる攻撃に無防備な状態を見つけ、追加すべき設定を案内します。</span></div></div>
         <div class="check"><div class="ic">🚪</div><div><b><span class="sev-dot" style="background:var(--warn)"></span>無認証の管理画面</b><span>/admin などが誰でも開ける状態になっていないかを確認します。</span></div></div>
       </div>
+      <div class="proof">
+        <div class="big">12</div>
+        <div class="txt">試しに<b>実在のAI生成サイトを1つ診断したら、開いている窓が12箇所</b>見つかりました(重大1・警告5・推奨6)。作った本人は気づいていませんでした。あなたのサイトはどうでしょう?</div>
+      </div>
     </section>
 
     <!-- ===== 料金 ===== -->
     <section class="lp">
       <div class="lp-eyebrow">PRICING / 料金</div>
-      <h2>診断は<span class="g">ずっと無料</span>。直すときだけ課金。</h2>
-      <p class="p">人は「問題を知ること」ではなく「問題が消えること」に払う。だから怖さの可視化は無料、解消から課金にしています。</p>
+      <h2>初回は<span class="g">まるごと無料</span>。続けたくなったら、その時だけ。</h2>
+      <p class="p">まず1回、登録するだけで全部見せます——スコアも、検出も、直し方まで。価値を実感してもらってから、2回目以降と「見張り続ける」ところだけ課金にしています。</p>
+      <div class="anchor">
+        <div class="anchor-row"><span class="l">エンジニアに相談して診てもらう</span><span class="r">数万円〜</span></div>
+        <div class="anchor-row"><span class="l">診ずに公開して、事故が起きたら</span><span class="r">数十万円〜 + 信用の失墜</span></div>
+        <div class="anchor-row"><span class="l">LaunchGuard の初回診断</span><span class="r">¥0(登録のみ)</span></div>
+      </div>
       <div class="plans">
-        <div class="plan">
-          <div class="tag">DIAGNOSE</div>
-          <div class="price">¥0</div>
-          <div class="note">まずは自分のサイトの弱点を知る</div>
-          <ul>
-            <li>URL外形診断(何度でも)</li>
-            <li>スコア+検出リスト</li>
-            <li>「何が起きうるか」の説明</li>
-            <li class="muted">直し方の詳細</li>
-          </ul>
-        </div>
         <div class="plan featured">
-          <div class="tag">FIX ● 単発</div>
-          <div class="price">¥1,980<small>〜 / サイト</small></div>
-          <div class="note">検出ごとの直し方+修正後の合格証</div>
+          <div class="tag">初回 ● まるごと無料</div>
+          <div class="price">¥0<small> / 登録のみ</small></div>
+          <div class="note">1回まるごと、全部見れる</div>
           <ul>
-            <li>全検出の具体的な修正手順</li>
+            <li>スコア+全検出リスト</li>
+            <li>「何が起きうるか」の説明</li>
+            <li>検出ごとの<b>直し方まで全部</b></li>
             <li>コピペで直せる修正指示文</li>
-            <li>修正後の再診断+合格バッジ</li>
-            <li>漏れた鍵の失効手順まで案内</li>
           </ul>
-          <span class="pill-free">β期間は無料公開中</span>
+          <span class="pill-free">クレジットカード不要</span>
         </div>
         <div class="plan">
-          <div class="tag">MONITOR ● 月額</div>
+          <div class="tag">追加診断 ● つど</div>
+          <div class="price">¥1,980<small>〜 / 回</small></div>
+          <div class="note">2回目以降・別サイトの診断</div>
+          <ul>
+            <li>直したあとの再診断</li>
+            <li>別のサイトの診断</li>
+            <li>修正後の合格レポート+バッジ</li>
+            <li class="muted">まとめて安いクレジットも予定</li>
+          </ul>
+        </div>
+        <div class="plan">
+          <div class="tag">定期監視 ● 月額</div>
           <div class="price">¥980<small>〜 / 月・サイト</small></div>
-          <div class="note">公開後も見張り続ける</div>
+          <div class="note">公開後も自動で見張り続ける</div>
           <ul>
             <li>定期スキャンで常時監視</li>
             <li>新しい脆弱性が出たら通知</li>
@@ -402,6 +480,18 @@
       </div>
     </section>
 
+    <!-- ===== こんな人に ===== -->
+    <section class="lp">
+      <div class="lp-eyebrow">FOR YOU / こんな人に</div>
+      <h2>1つでも当てはまったら、<span class="g">30秒だけ試す価値</span>があります。</h2>
+      <div class="persona">
+        <div class="row"><span class="ck">✓</span><span>ChatGPTやv0で作ったサイトを、これから公開しようとしている</span></div>
+        <div class="row"><span class="ck">✓</span><span>もう公開したけど、セキュリティが不安で確認していない</span></div>
+        <div class="row"><span class="ck">✓</span><span>問い合わせフォームや会員機能など、個人情報を扱っている</span></div>
+        <div class="row"><span class="ck">✓</span><span>コードの中身は分からないが、事故だけは絶対に避けたい</span></div>
+      </div>
+    </section>
+
     <!-- ===== FAQ ===== -->
     <section class="lp">
       <div class="lp-eyebrow">FAQ / よくある質問</div>
@@ -418,7 +508,8 @@
     <div class="cta-band">
       <h2>そのサイト、公開して大丈夫?</h2>
       <p>30秒でわかります。登録不要・無料。</p>
-      <button class="cta-btn" id="cta-scan">▶ 上に戻って診断する</button>
+      <button class="cta-btn" id="cta-scan">▶ 今すぐ無料で危険度をチェック</button>
+      <div class="cta-sub">初回は登録するだけで、スコアから直し方まで全部無料 — クレジットカード不要</div>
     </div>
   </section>
 
