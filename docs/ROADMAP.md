@@ -133,4 +133,5 @@ Illustratorを持っていないがプロ向け納品データが必要な人
 - [x] 結果ページのUI(管制室風ダークデザイン、スキャン演出・スコアゲージ付き)
 - [x] 診断項目をURL(公開サイト)対応に拡張
 - [x] Vercelデプロイ構成(public/ + api/scan.py)。あとはVercelでImportするだけ
-- [ ] VectorPack プロトタイプ(PNG→SVG→.ai互換PDF)→ Figma確認 → Adobe体験版で最終確認
+- [x] VectorPack プロトタイプ(PNG→SVG→.ai互換PDF)実装・品質確認済み(`tools/vectorpack/`)
+- [ ] VectorPack: Figma確認 → Adobe体験版で最終確認(ユーザー側)
