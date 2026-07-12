@@ -23,8 +23,19 @@ from pathlib import Path
 from PIL import Image
 
 
+def is_monochrome(img: Image.Image) -> bool:
+    """ほぼ白黒(グレースケール)の画像かを判定する。白黒ロゴは2値モードが最適。"""
+    small = img.convert("RGB").resize((96, 96))
+    for r, g, b in list(small.getdata()):
+        if max(abs(r - g), abs(g - b), abs(r - b)) > 24:  # 彩度のある画素があればカラー
+            return False
+    return True
+
+
 def analyze_suitability(img: Image.Image) -> tuple[str, bool]:
     """ベクター化に向く画像かを色数から判定する(正直に伝えるのが機能)。"""
+    if is_monochrome(img):
+        return "白黒ロゴです。2値モードで高品質・軽量にベクター化します。", True
     small = img.convert("RGBA").resize((128, 128))
     colors = small.getcolors(maxcolors=128 * 128)
     n = len(colors) if colors else 128 * 128
@@ -36,21 +47,35 @@ def analyze_suitability(img: Image.Image) -> tuple[str, bool]:
             "ファイルが巨大化し品質も落ちます(ロゴ・イラスト用途を推奨)。"), False
 
 
-def png_to_svg(src: Path, dst: Path):
+def png_to_svg(src: Path, dst: Path, monochrome: bool = False):
+    """PNGをSVGにトレースする。
+
+    白黒ロゴ(monochrome=True)は binary モードを使う。細い線もシャープに出て、
+    アンチエイリアスの縁を大量の色と誤認しないためファイルも大幅に軽い
+    (実測: LIFE SHIFTロゴで color 743KB → binary 112KB)。
+    """
     import vtracer
-    vtracer.convert_image_to_svg_py(
-        str(src), str(dst),
-        colormode="color",
-        hierarchical="stacked",
-        mode="spline",          # 曲線で近似(ロゴ向き)
-        filter_speckle=4,       # ごみ除去
-        color_precision=6,
-        layer_difference=16,
-        corner_threshold=60,
-        length_threshold=4.0,
-        splice_threshold=45,
-        path_precision=3,
-    )
+    if monochrome:
+        vtracer.convert_image_to_svg_py(
+            str(src), str(dst),
+            colormode="binary", mode="spline",
+            filter_speckle=2, corner_threshold=55,
+            length_threshold=3.5, splice_threshold=45, path_precision=4,
+        )
+    else:
+        vtracer.convert_image_to_svg_py(
+            str(src), str(dst),
+            colormode="color",
+            hierarchical="stacked",
+            mode="spline",          # 曲線で近似(ロゴ向き)
+            filter_speckle=4,       # ごみ除去
+            color_precision=6,
+            layer_difference=16,
+            corner_threshold=60,
+            length_threshold=4.0,
+            splice_threshold=45,
+            path_precision=3,
+        )
 
 
 def svg_to_pdf(svg: Path, pdf: Path):
@@ -67,19 +92,26 @@ def make_pack(input_path: Path, out_dir: Path) -> Path:
     name = input_path.stem
 
     img = Image.open(input_path)
+    mono = is_monochrome(img)
     note, _suitable = analyze_suitability(img)
     print(f"[判定] {note}")
 
-    # 入力をPNGに正規化(JPG等にも対応)
+    # 入力をPNGに正規化(JPG等にも対応)。白黒は白背景でフラット化して2値化に備える
     normalized = out_dir / f"{name}-original.png"
-    img.convert("RGBA").save(normalized)
+    if mono:
+        bg = Image.new("RGB", img.size, (255, 255, 255))
+        rgba = img.convert("RGBA")
+        bg.paste(rgba, mask=rgba.split()[3])
+        bg.save(normalized)
+    else:
+        img.convert("RGBA").save(normalized)
 
     svg = out_dir / f"{name}.svg"
     pdf = out_dir / f"{name}.pdf"
     ai = out_dir / f"{name}.ai"
 
     print("[1/3] ベクター化(PNG → SVG)…")
-    png_to_svg(normalized, svg)
+    png_to_svg(normalized, svg, monochrome=mono)
 
     print("[2/3] ベクターPDFを生成(SVG → PDF)…")
     svg_to_pdf(svg, pdf)
