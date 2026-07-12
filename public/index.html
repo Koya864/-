@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LaunchGuard — AIで作ったサイトの健康診断</title>
+<meta name="description" content="AIで作ったサイトのセキュリティを30秒で無料診断。専門用語を使わず、何が起きうるかと直し方を日本語で報告します。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2322d3ee'/%3E%3Cstop offset='100%25' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M12 2.2 L20 5.4 V11 C20 16.2 16.6 20 12 21.8 C7.4 20 4 16.2 4 11 V5.4 Z' fill='%23070b14' stroke='url(%23g)' stroke-width='1.7' stroke-linejoin='round'/%3E%3Cline x1='7.2' y1='11.5' x2='16.8' y2='11.5' stroke='url(%23g)' stroke-width='1.5' stroke-linecap='round'/%3E%3Ccircle cx='16.8' cy='11.5' r='1.7' fill='%2322d3ee'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #070b14;
+    --panel: rgba(148, 180, 255, 0.045);
+    --line: rgba(130, 165, 255, 0.14);
+    --line-strong: rgba(130, 165, 255, 0.3);
+    --text: #e8edf7;
+    --muted: #8fa0bd;
+    --faint: #5b6a85;
+    --cyan: #22d3ee;
+    --grad: linear-gradient(93deg, #22d3ee 0%, #6d8cff 55%, #8b5cf6 100%);
+    --crit: #ff5c7a; --crit-bg: rgba(255, 92, 122, 0.1);
+    --warn: #ffb454; --warn-bg: rgba(255, 180, 84, 0.09);
+    --info: #5ea8ff; --info-bg: rgba(94, 168, 255, 0.09);
+    --ok: #34d399;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { color-scheme: dark; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans);
+         line-height: 1.8; overflow-x: hidden; }
+
+  .field-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .field-bg::before { content: ""; position: absolute; inset: 0;
+    background:
+      linear-gradient(rgba(130,165,255,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(130,165,255,.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 30%, transparent 75%);
+  }
+  .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .5; }
+  .orb.a { width: 480px; height: 480px; top: -180px; left: -120px;
+           background: radial-gradient(circle, rgba(34,211,238,.32), transparent 65%); }
+  .orb.b { width: 560px; height: 560px; top: -140px; right: -180px;
+           background: radial-gradient(circle, rgba(139,92,246,.30), transparent 65%); }
+  @media (prefers-reduced-motion: no-preference) {
+    .orb.a { animation: drift 16s ease-in-out infinite alternate; }
+    .orb.b { animation: drift 21s ease-in-out infinite alternate-reverse; }
+    @keyframes drift { to { transform: translate(60px, 40px) scale(1.08); } }
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; padding: 24px 20px 72px; }
+
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+  .wordmark { display: flex; align-items: center; gap: 11px;
+              font-family: var(--mono); font-weight: 700; font-size: 17px; letter-spacing: .14em; }
+  .wordmark .g { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .logo { display: block; filter: drop-shadow(0 0 8px rgba(34,211,238,.35)); }
+  @media (prefers-reduced-motion: no-preference) {
+    .logo .beam { animation: sweep 3.2s ease-in-out infinite; }
+    @keyframes sweep { 0%, 100% { transform: translateY(-3.2px); opacity: .35; }
+                       50% { transform: translateY(3.2px); opacity: 1; } }
+  }
+  .pill-beta { font-family: var(--mono); font-size: 11px; letter-spacing: .18em; color: var(--cyan);
+               border: 1px solid rgba(34,211,238,.35); border-radius: 99px; padding: 4px 12px;
+               display: flex; align-items: center; gap: 7px; white-space: nowrap; }
+  .pill-beta i { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); }
+  @media (prefers-reduced-motion: no-preference) {
+    .pill-beta i { animation: blink 1.6s ease-in-out infinite; }
+    @keyframes blink { 50% { opacity: .25; } }
+  }
+
+  .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .34em; color: var(--faint);
+             margin: 52px 0 14px; }
+  h1 { font-size: clamp(28px, 5.5vw, 40px); line-height: 1.4; margin: 0 0 14px; font-weight: 600;
+       letter-spacing: .02em; text-wrap: balance; }
+  h1 .g { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lead { color: var(--muted); font-size: 15px; max-width: 34em; margin: 0 0 34px; }
+
+  .console { border: 1px solid var(--line); border-radius: 16px; background: var(--panel);
+             backdrop-filter: blur(8px); overflow: hidden;
+             box-shadow: 0 0 0 1px rgba(7,11,20,.4), 0 24px 80px -32px rgba(34,211,238,.25); }
+  .console-head { display: flex; align-items: center; gap: 8px; padding: 12px 18px;
+                  border-bottom: 1px solid var(--line); font-family: var(--mono);
+                  font-size: 11px; letter-spacing: .22em; color: var(--faint); }
+  .dots { display: flex; gap: 6px; margin-right: 6px; }
+  .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line-strong); }
+  .console-body { padding: 26px 24px 24px; }
+  .url-row { display: flex; align-items: center; border: 1px solid var(--line-strong);
+             border-radius: 12px; background: rgba(7,11,20,.7); transition: box-shadow .2s, border-color .2s; }
+  .url-row:focus-within { border-color: rgba(34,211,238,.6); box-shadow: 0 0 0 3px rgba(34,211,238,.15); }
+  .proto { font-family: var(--mono); font-size: 14px; color: var(--ok); padding: 0 4px 0 16px; user-select: none; }
+  .url-input { flex: 1; min-width: 0; background: none; border: none; outline: none; color: var(--text);
+               font-family: var(--mono); font-size: 15px; padding: 15px 16px 15px 4px; }
+  .url-input::placeholder { color: var(--faint); }
+  label.own { display: flex; gap: 10px; align-items: flex-start; margin: 16px 2px; font-size: 13px;
+              color: var(--muted); cursor: pointer; }
+  label.own input { margin-top: 5px; accent-color: var(--cyan); }
+  .go { width: 100%; padding: 16px; font-size: 15px; font-weight: 700; letter-spacing: .08em;
+        color: #ffffff; background: linear-gradient(93deg, #0e7490 0%, #4f46e5 55%, #7c3aed 100%);
+        border: none; border-radius: 12px; cursor: pointer;
+        font-family: var(--sans); transition: filter .15s, transform .15s; }
+  .go:hover { filter: brightness(1.12); }
+  .go:active { transform: translateY(1px); }
+  .go:disabled { filter: grayscale(.4) brightness(.8); cursor: wait; }
+  .go:focus-visible, a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible {
+    outline: 2px solid var(--cyan); outline-offset: 3px; }
+  .console-foot { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; color: var(--faint);
+                  margin: 14px 2px 0; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+  .chip { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; color: var(--muted);
+          border: 1px solid var(--line); border-radius: 99px; padding: 5px 14px; }
+
+  #scanning { display: none; }
+  .term { border: 1px solid var(--line); border-radius: 16px; background: rgba(5,8,15,.92);
+          margin-top: 40px; overflow: hidden; position: relative; }
+  .term::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(130,165,255,.02) 3px 4px); }
+  .term-body { padding: 24px; font-family: var(--mono); font-size: 13px; min-height: 200px; }
+  .term-line { color: var(--muted); }
+  .term-line .ok { color: var(--ok); }
+  .term-line .dim { color: var(--faint); }
+  .progress { height: 3px; background: rgba(130,165,255,.12); }
+  .progress i { display: block; height: 100%; width: 0%; background: var(--grad); transition: width .5s ease; }
+
+  #result { display: none; }
+  .result-head { display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: center;
+                 margin-top: 44px; padding: 26px; border: 1px solid var(--line); border-radius: 16px;
+                 background: var(--panel); }
+  @media (max-width: 560px) { .result-head { grid-template-columns: 1fr; justify-items: center; text-align: center; } }
+  .gauge { position: relative; width: 148px; height: 148px; }
+  .gauge svg { transform: rotate(-90deg); }
+  .gauge .track { stroke: rgba(130,165,255,.12); }
+  .gauge .bar { stroke-linecap: round; stroke-dasharray: 339.3; stroke-dashoffset: 339.3;
+                transition: stroke-dashoffset 1.2s cubic-bezier(.2,.7,.2,1); }
+  .gauge .num { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+  .gauge .num b { font-size: 40px; font-weight: 800; line-height: 1;
+                  font-variant-numeric: tabular-nums; }
+  .gauge .num span { font-family: var(--mono); font-size: 10px; letter-spacing: .22em; color: var(--faint); }
+  .result-meta .target { font-family: var(--mono); font-size: 12px; color: var(--faint); word-break: break-all; }
+  .result-meta h2 { margin: 6px 0 10px; font-size: 22px; font-weight: 700; }
+  .result-meta h2 em { font-style: normal; }
+  .verdict { font-size: 14px; color: var(--muted); margin: 8px 0 0; }
+  .counts { display: flex; gap: 10px; flex-wrap: wrap; }
+  .count { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; padding: 5px 14px;
+           border-radius: 99px; display: flex; align-items: center; gap: 8px; }
+  .count i { width: 7px; height: 7px; border-radius: 50%; }
+  .count.c { color: var(--crit); background: var(--crit-bg); } .count.c i { background: var(--crit); }
+  .count.w { color: var(--warn); background: var(--warn-bg); } .count.w i { background: var(--warn); }
+  .count.i { color: var(--info); background: var(--info-bg); } .count.i i { background: var(--info); }
+
+  .sec-label { font-family: var(--mono); font-size: 11px; letter-spacing: .3em; color: var(--faint);
+               margin: 40px 0 6px; }
+
+  .finding { border: 1px solid var(--line); border-radius: 14px; background: var(--panel);
+             padding: 20px 22px; margin-top: 14px; position: relative; overflow: hidden; }
+  .finding::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+  .finding.crit::before { background: var(--crit); box-shadow: 0 0 14px var(--crit); }
+  .finding.warn::before { background: var(--warn); }
+  .finding.info::before { background: var(--info); }
+  .f-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .sev { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .24em;
+         padding: 3px 12px; border-radius: 4px; }
+  .crit .sev { color: var(--crit); background: var(--crit-bg); border: 1px solid rgba(255,92,122,.3); }
+  .warn .sev { color: var(--warn); background: var(--warn-bg); border: 1px solid rgba(255,180,84,.3); }
+  .info .sev { color: var(--info); background: var(--info-bg); border: 1px solid rgba(94,168,255,.3); }
+  .loc { font-family: var(--mono); font-size: 11px; color: var(--faint); word-break: break-all; }
+  .finding h3 { margin: 10px 0 4px; font-size: 15.5px; font-weight: 700; }
+  .finding p { margin: 6px 0 0; font-size: 13.5px; color: var(--muted); }
+  .finding p b { color: var(--text); font-weight: 700; }
+  details.fix { margin-top: 12px; }
+  details.fix summary { cursor: pointer; font-size: 13px; font-weight: 700; color: var(--cyan);
+                        font-family: var(--mono); letter-spacing: .04em; }
+  details.fix summary::marker { color: var(--faint); }
+  details.fix .fix-body { margin-top: 10px; padding: 14px 16px; font-size: 13.5px; color: var(--text);
+                          background: rgba(34,211,238,.06); border: 1px solid rgba(34,211,238,.2);
+                          border-radius: 10px; }
+  .fix-tag { font-family: var(--mono); font-size: 10px; letter-spacing: .2em; color: var(--faint); }
+
+  .clean { border: 1px solid rgba(52,211,153,.35); border-radius: 14px; background: rgba(52,211,153,.07);
+           padding: 22px; margin-top: 16px; font-size: 14px; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal { animation: rise .5s cubic-bezier(.2,.7,.2,1) both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+  }
+
+  .back { display: inline-flex; align-items: center; gap: 8px; margin-top: 30px; color: var(--cyan);
+          cursor: pointer; background: none; border: 1px solid var(--line-strong); border-radius: 10px;
+          font-size: 13px; padding: 10px 18px; font-family: var(--mono); letter-spacing: .06em; }
+  .back:hover { border-color: rgba(34,211,238,.5); }
+
+  .errbox { display: none; border: 1px solid rgba(255,92,122,.4); border-radius: 14px;
+            background: var(--crit-bg); padding: 22px; margin-top: 40px; font-size: 14px; }
+  .errbox b { color: var(--crit); }
+  .errbox .detail { font-family: var(--mono); font-size: 11px; color: var(--faint); margin-top: 8px;
+                    word-break: break-all; }
+
+  footer { margin-top: 52px; font-size: 12px; color: var(--faint); border-top: 1px solid var(--line);
+           padding-top: 18px; }
+</style>
+</head>
+<body>
+<div class="field-bg"><div class="orb a"></div><div class="orb b"></div></div>
+
+<div class="wrap">
+  <div class="topbar">
+    <div class="wordmark">
+      <svg class="logo" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+        <defs>
+          <linearGradient id="lgGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#8b5cf6"/>
+          </linearGradient>
+        </defs>
+        <path d="M12 2.2 L20 5.4 V11 C20 16.2 16.6 20 12 21.8 C7.4 20 4 16.2 4 11 V5.4 Z"
+              fill="rgba(34,211,238,.06)" stroke="url(#lgGrad)" stroke-width="1.7" stroke-linejoin="round"/>
+        <g class="beam">
+          <line x1="7.2" y1="11.5" x2="16.8" y2="11.5" stroke="url(#lgGrad)" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="16.8" cy="11.5" r="1.7" fill="#22d3ee"/>
+        </g>
+      </svg>
+      <span>LAUNCH<span class="g">GUARD</span></span>
+    </div>
+    <div class="pill-beta"><i></i>FREE BETA</div>
+  </div>
+
+  <section id="top">
+    <div class="eyebrow">AI-BUILT SITE / SECURITY SCAN</div>
+    <h1>そのサイト、<br>公開して<span class="g">大丈夫?</span></h1>
+    <p class="lead">AIで作ったサイトの「開いている窓」を30秒で走査。専門用語を使わず、<b>何が起きうるか</b>と<b>直し方</b>を日本語で報告します。</p>
+
+    <div class="console">
+      <div class="console-head"><span class="dots"><i></i><i></i><i></i></span>SECURITY CONSOLE</div>
+      <div class="console-body">
+        <form id="scanform">
+          <div class="url-row">
+            <span class="proto">https://</span>
+            <input class="url-input" id="url" type="text" inputmode="url" autocomplete="url"
+                   placeholder="your-site.vercel.app" aria-label="診断するサイトのURL" required>
+          </div>
+          <label class="own"><input type="checkbox" id="own" required>
+            このサイトは自分(自社)が管理するサイトです。安全確認のために診断します。</label>
+          <button class="go" id="run" type="submit">▶ スキャンを開始する</button>
+        </form>
+        <div class="console-foot">// 登録不要・受動的チェックのみ・結果は保存されません</div>
+      </div>
+    </div>
+
+    <div class="chips">
+      <span class="chip">SCAN 30s</span>
+      <span class="chip">日本語レポート</span>
+      <span class="chip">修正手順つき</span>
+      <span class="chip">NO SIGNUP</span>
+    </div>
+  </section>
+
+  <section id="scanning" aria-live="polite">
+    <div class="eyebrow">SCANNING…</div>
+    <div class="term">
+      <div class="progress"><i id="bar"></i></div>
+      <div class="term-body" id="log"></div>
+    </div>
+  </section>
+
+  <div class="errbox" id="errbox">
+    <b>診断できませんでした。</b><br>
+    サイトが公開されているか、URLに間違いがないか確認してください。<br>
+    <div class="detail" id="errdetail"></div>
+    <button class="back" id="errback">← 戻る</button>
+  </div>
+
+  <section id="result" aria-live="polite">
+    <div class="result-head" id="rhead">
+      <div class="gauge">
+        <svg width="148" height="148" viewBox="0 0 120 120" aria-hidden="true">
+          <defs>
+            <linearGradient id="gradBad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#ff5c7a"/><stop offset="100%" stop-color="#ffb454"/>
+            </linearGradient>
+            <linearGradient id="gradMid" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#ffb454"/><stop offset="100%" stop-color="#5ea8ff"/>
+            </linearGradient>
+            <linearGradient id="gradGood" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#34d399"/><stop offset="100%" stop-color="#22d3ee"/>
+            </linearGradient>
+          </defs>
+          <circle class="track" cx="60" cy="60" r="54" fill="none" stroke-width="9"/>
+          <circle class="bar" id="scorebar" cx="60" cy="60" r="54" fill="none" stroke-width="9" stroke="url(#gradBad)"/>
+        </svg>
+        <div class="num"><b id="scorenum">0</b><span>SECURITY<br>SCORE</span></div>
+      </div>
+      <div class="result-meta">
+        <div class="target" id="rtarget"></div>
+        <h2 id="rtitle"></h2>
+        <div class="counts" id="rcounts"></div>
+        <p class="verdict" id="rverdict"></p>
+      </div>
+    </div>
+    <div class="sec-label" id="seclabel">FINDINGS / 検出結果</div>
+    <div id="cards"></div>
+    <button class="back" id="back">← RESCAN / 別のサイトを診断する</button>
+  </section>
+
+  <footer>診断は通常のブラウザアクセスと同じ範囲(受動的チェック)のみ行います。診断結果はサーバーに保存されません。<br>
+    このツールは自分が管理するサイトの確認用です。他人のサイトの調査には使わないでください。</footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const SEV = {
+    critical: { cls: "crit", label: "CRITICAL", ja: "重大" },
+    warning:  { cls: "warn", label: "WARNING",  ja: "警告" },
+    info:     { cls: "info", label: "ADVISORY", ja: "推奨" },
+  };
+  const LOG_LINES = [
+    "接続を確認しています …",
+    "HTTPSとリダイレクトを検査 …",
+    "レスポンスヘッダーを解析 …",
+    "ページ内のAPIキー露出を走査 …",
+    "JavaScriptを取得して検査 …",
+    "フォーム・リンクの安全性を確認 …",
+  ];
+  let ticker = null;
+
+  function view(name) {
+    for (const id of ["top", "scanning", "result"]) $(id).style.display = id === name ? "block" : "none";
+    $("errbox").style.display = name === "error" ? "block" : "none";
+    window.scrollTo({ top: 0 });
+  }
+
+  function startLog() {
+    const log = $("log"); log.textContent = "";
+    let i = 0;
+    const step = () => {
+      if (i < LOG_LINES.length) {
+        const div = document.createElement("div");
+        div.className = "term-line";
+        div.textContent = "[" + (i + 1) + "/" + LOG_LINES.length + "] " + LOG_LINES[i];
+        log.appendChild(div);
+        $("bar").style.width = Math.round(((i + 1) / (LOG_LINES.length + 1)) * 90) + "%";
+        i++;
+      }
+    };
+    step();
+    ticker = setInterval(step, reduced ? 150 : 800);
+  }
+
+  function stopLog() { clearInterval(ticker); $("bar").style.width = "100%"; }
+
+  function normalizeUrl(raw) {
+    let u = raw.trim();
+    if (!u) return "";
+    if (!/^https?:\/\//i.test(u)) u = "https://" + u;
+    return u;
+  }
+
+  async function runScan(ev) {
+    ev.preventDefault();
+    const url = normalizeUrl($("url").value);
+    if (!url || !$("own").checked) return;
+    $("run").disabled = true;
+    view("scanning");
+    startLog();
+    try {
+      const r = await fetch("/api/scan?own=1&url=" + encodeURIComponent(url));
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || ("HTTP " + r.status));
+      stopLog();
+      setTimeout(() => render(data), reduced ? 50 : 450);
+    } catch (e) {
+      stopLog();
+      $("errdetail").textContent = String(e.message || e);
+      view("error");
+    } finally {
+      $("run").disabled = false;
+    }
+  }
+
+  function score(counts) {
+    const s = 100 - counts.critical * 30 - counts.warning * 8 - counts.info * 2;
+    return Math.max(4, Math.min(100, s));
+  }
+
+  function render(data) {
+    const findings = data.findings || [];
+    const counts = { critical: 0, warning: 0, info: 0 };
+    findings.forEach(f => { if (counts[f.severity] !== undefined) counts[f.severity]++; });
+
+    $("rtarget").textContent = "TARGET: " + data.target + " — " + data.files_scanned + " files scanned";
+    const title = $("rtitle");
+    title.textContent = "";
+    if (findings.length === 0) {
+      title.textContent = "開いている窓は見つかりませんでした";
+    } else {
+      title.append("開いている窓が ");
+      const em = document.createElement("em");
+      em.textContent = findings.length;
+      em.style.color = counts.critical ? "var(--crit)" : (counts.warning ? "var(--warn)" : "var(--info)");
+      title.append(em, " 箇所見つかりました");
+    }
+
+    const rc = $("rcounts"); rc.textContent = "";
+    [["c", "重大", counts.critical], ["w", "警告", counts.warning], ["i", "推奨", counts.info]].forEach(([cls, ja, n]) => {
+      const span = document.createElement("span");
+      span.className = "count " + cls;
+      const dot = document.createElement("i");
+      span.append(dot, ja + " " + n);
+      rc.appendChild(span);
+    });
+
+    $("rverdict").textContent = counts.critical
+      ? "今すぐ対応が必要です。重大な項目は、放置すると実害(金銭・情報漏洩)につながります。"
+      : counts.warning
+        ? "公開は可能ですが、警告の項目は早めの対応をおすすめします。"
+        : findings.length
+          ? "大きな問題はありません。推奨項目を直すとさらに堅牢になります。"
+          : "この診断範囲では問題が見つかりませんでした。よくできています。";
+
+    const cards = $("cards"); cards.textContent = "";
+    $("seclabel").style.display = findings.length ? "block" : "none";
+    if (!findings.length) {
+      const div = document.createElement("div");
+      div.className = "clean reveal";
+      div.textContent = "受動的チェックの範囲では、開いている窓は検出されませんでした。フォームやログイン機能があるサイトは、リポジトリ診断(準備中)でさらに深く確認できます。";
+      cards.appendChild(div);
+    }
+    findings.forEach((f, i) => {
+      const sev = SEV[f.severity] || SEV.info;
+      const card = document.createElement("div");
+      card.className = "finding " + sev.cls + " reveal";
+      card.style.animationDelay = (0.15 + i * 0.06) + "s";
+
+      const top = document.createElement("div"); top.className = "f-top";
+      const pill = document.createElement("span"); pill.className = "sev"; pill.textContent = sev.label;
+      const loc = document.createElement("span"); loc.className = "loc";
+      loc.textContent = (f.file || "") + (f.line ? ":" + f.line : "") + (f.evidence ? "(検出値: " + f.evidence + ")" : "");
+      top.append(pill, loc);
+
+      const h = document.createElement("h3"); h.textContent = f.title;
+      const p = document.createElement("p");
+      const b = document.createElement("b"); b.textContent = "何が起きうるか: ";
+      p.append(b, f.scenario);
+
+      const det = document.createElement("details"); det.className = "fix";
+      const sum = document.createElement("summary");
+      sum.append("> 直し方を見る ");
+      const tag = document.createElement("span"); tag.className = "fix-tag"; tag.textContent = "[β版につき無料公開中]";
+      sum.appendChild(tag);
+      const body = document.createElement("div"); body.className = "fix-body"; body.textContent = f.fix;
+      det.append(sum, body);
+
+      card.append(top, h, p, det);
+      cards.appendChild(card);
+    });
+
+    view("result");
+    $("rhead").classList.add("reveal");
+
+    const sc = score(counts);
+    const bar = $("scorebar");
+    bar.setAttribute("stroke", sc >= 80 ? "url(#gradGood)" : sc >= 50 ? "url(#gradMid)" : "url(#gradBad)");
+    const numEl = $("scorenum");
+    numEl.style.color = sc >= 80 ? "var(--ok)" : sc >= 50 ? "var(--warn)" : "var(--crit)";
+    bar.style.strokeDashoffset = 339.3;
+    numEl.textContent = "0";
+    requestAnimationFrame(() => setTimeout(() => {
+      bar.style.strokeDashoffset = 339.3 * (1 - sc / 100);
+      const t0 = performance.now(); const dur = reduced ? 1 : 1100;
+      (function tick(now) {
+        const p = Math.min(1, (now - t0) / dur);
+        numEl.textContent = Math.round(sc * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) requestAnimationFrame(tick);
+      })(t0);
+    }, 150));
+  }
+
+  function reset() {
+    view("top");
+    $("cards").textContent = "";
+    $("rhead").classList.remove("reveal");
+  }
+
+  $("scanform").addEventListener("submit", runScan);
+  $("back").addEventListener("click", reset);
+  $("errback").addEventListener("click", reset);
+})();
+</script>
+</body>
+</html>

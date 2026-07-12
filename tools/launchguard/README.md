@@ -7,12 +7,21 @@ AIで作ったサイトを公開する前に、セキュリティ・品質の「
 
 ## 使い方
 
-**Web画面(お試し版)** — URLを入れて診断:
+**Web画面** — URLを入れて診断:
 
 ```bash
 python3 tools/launchguard/app.py
 # → ブラウザで http://localhost:8787 を開く
 ```
+
+**Vercelへの公開(無料)**:
+
+1. このリポジトリをGitHubにプッシュした状態で、Vercelで「Import Project」からこのリポジトリを選ぶ
+2. 設定はデフォルトのまま Deploy(`public/` が画面、`api/scan.py` が診断APIとして自動認識される)
+3. 発行されたURLを開けば、誰でも使える状態になる
+
+診断ロジック(`scan.py` / `urlscan.py`)を変更したら `scripts/sync-api-lib.sh` を実行して
+Vercel用のコピー(`api/_lib/`)に同期すること。
 
 **コマンドライン**:
 
