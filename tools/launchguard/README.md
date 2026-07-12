@@ -7,19 +7,35 @@ AIで作ったサイトを公開する前に、セキュリティ・品質の「
 
 ## 使い方
 
+**Web画面(お試し版)** — URLを入れて診断:
+
 ```bash
+python3 tools/launchguard/app.py
+# → ブラウザで http://localhost:8787 を開く
+```
+
+**コマンドライン**:
+
+```bash
+# 公開URLの外形診断(受動的チェックのみ)
+python3 tools/launchguard/urlscan.py https://example.com [--md report.md] [--json result.json]
+
+# ローカルのサイトフォルダの診断
 python3 tools/launchguard/scan.py <サイトのフォルダ> [--md report.md] [--json result.json]
 ```
 
 依存パッケージなし(Python 3.9+ のみ)。重大な検出があると終了コード 2 を返す(CI組み込み用)。
+開発時にlocalhost等を診断する場合は `LAUNCHGUARD_ALLOW_PRIVATE=1` を付ける。
 
 ## 現在の診断項目
 
 | ID | 重さ | 内容 |
 |---|---|---|
+| no-https / no-https-redirect | 重大〜警告 | HTTPS未対応、http→https転送なし(URL版) |
+| header-* | 警告〜推奨 | セキュリティヘッダー欠如: HSTS / X-Content-Type-Options / X-Frame-Options / CSP / Referrer-Policy / Permissions-Policy、バージョン露出(URL版) |
 | hardcoded-secret | 重大 | APIキー等のコード直書き(OpenAI/Anthropic/Google/AWS/Stripe/GitHub/Slack/JWT/汎用) |
 | exposed-file | 重大〜推奨 | .env / .git / DB / バックアップ / アーカイブの公開フォルダ混入 |
-| no-security-headers | 警告 | セキュリティヘッダー設定ファイルの欠如 |
+| no-security-headers | 警告 | セキュリティヘッダー設定ファイルの欠如(ローカル版) |
 | innerhtml-injection | 警告 | innerHTML への変数埋め込み(XSSの典型) |
 | risky-js | 警告 | eval / document.write の使用 |
 | form-insecure-action / form-mailto / form-js-handled | 重大〜推奨 | フォーム送信先の問題 |
@@ -36,7 +52,8 @@ python3 tools/launchguard/scan.py <サイトのフォルダ> [--md report.md] [-
 
 ## 次のステップ
 
-- [ ] URL(公開サイト)モード: HTTPS / セキュリティヘッダー / 公開ファイル露出の実地チェック
+- [x] URL(公開サイト)モード: HTTPS・セキュリティヘッダー・HTML/JSの実地チェック
+- [x] Web画面(お試し版): URL入力→診断→日本語レポート表示
 - [ ] JS内の http:// 通信(fetch/XHR)の検出
 - [ ] リポジトリモード: コミット履歴のシークレット走査(gitleaks連携)
 - [ ] LLMによるサイト文脈込みレポート生成
