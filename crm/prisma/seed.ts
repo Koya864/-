@@ -17,7 +17,12 @@ function yearsAgo(years: number, offsetDays = 0): Date {
 }
 
 async function main() {
-  await prisma.customer.deleteMany();
+  // デプロイのたびに実行されるため、既にデータがあれば何もしない（実データ保護）
+  const existing = await prisma.customer.count();
+  if (existing > 0) {
+    console.log(`顧客データが${existing}件あるためシードをスキップしました`);
+    return;
+  }
 
   await prisma.customer.create({
     data: {
