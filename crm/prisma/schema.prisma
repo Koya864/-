@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 顧客
+model Customer {
+  id         String   @id @default(cuid())
+  name       String
+  kana       String?
+  birthday   DateTime?
+  phone      String?
+  email      String?
+  address    String?
+  occupation String?
+  // パーソナル情報（面談の話題づくりに使う）
+  hobbies    String?  // 趣味・好きな話題
+  notes      String?  // その他メモ（健康の話・NGトピック等）
+  tags       String?  // カンマ区切りタグ（MVPでは簡易実装）
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  familyMembers FamilyMember[]
+  contracts     Contract[]
+  interactions  Interaction[]
+}
+
+// 家族
+model FamilyMember {
+  id         String    @id @default(cuid())
+  customerId String
+  name       String
+  relation   String // 続柄（妻・長男など）
+  birthday   DateTime?
+  note       String?
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+}
+
+// 契約
+model Contract {
+  id           String    @id @default(cuid())
+  customerId   String
+  productName  String
+  contractDate DateTime // 契約日（記念日の起点）
+  renewalDate  DateTime? // 次回更新日
+  premium      Int? // 月額保険料（円）
+  beneficiary  String? // 受取人
+  note         String?
+  createdAt    DateTime  @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+}
+
+// 接触履歴（面談・電話・偶然会った等）
+model Interaction {
+  id         String   @id @default(cuid())
+  customerId String
+  date       DateTime
+  type       String // 面談 / 電話 / メール・LINE / 偶然 / その他
+  place      String?
+  content    String // メモ本文
+  nextAction String? // 次のアクション
+  createdAt  DateTime @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+}

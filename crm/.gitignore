@@ -1,0 +1,11 @@
+node_modules/
+.next/
+*.tsbuildinfo
+next-env.d.ts
+
+# ローカルDB（顧客情報を含むためコミット禁止）
+prisma/*.db
+prisma/*.db-journal
+
+.env
+.env.local
