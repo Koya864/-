@@ -5,6 +5,14 @@ AIで作ったロゴ・イラスト(PNG/JPG)を、映像・印刷の現場に渡
 
 ## 使い方
 
+**Web版(アップロード→プレビュー→ダウンロード)**:
+```bash
+python3 tools/vectorpack/webapp.py
+# → ブラウザで http://localhost:8788
+```
+
+**コマンドライン**:
+
 ```bash
 pip install vtracer svglib reportlab pillow
 python3 tools/vectorpack/vectorize.py ロゴ.png [--out 出力先]

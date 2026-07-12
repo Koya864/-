@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VectorPack — AIで作った画像を、プロの納品データに</title>
+<meta name="description" content="AIで作ったロゴ・イラストを、映像・印刷に渡せるベクター納品データ(.ai / SVG / PDF)に変換。Illustratorがなくても大丈夫。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23a78bfa'/%3E%3Cstop offset='100%25' stop-color='%2322d3ee'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M4 5 L12 3 L20 5 L20 13 C20 18 16 21 12 22 C8 21 4 18 4 13 Z' fill='%230b0a14'/%3E%3Cpath d='M8 10 L12 16 L16 10' fill='none' stroke='url(%23g)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='12' cy='8' r='1.6' fill='%23a78bfa'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #0a0912;
+    --panel: rgba(180, 160, 255, 0.05);
+    --line: rgba(167, 139, 250, 0.16);
+    --line-strong: rgba(167, 139, 250, 0.32);
+    --text: #ece9f7;
+    --muted: #a29bc0;
+    --faint: #6a6288;
+    --violet: #a78bfa;
+    --cyan: #22d3ee;
+    --grad: linear-gradient(93deg, #a78bfa 0%, #8b7bf0 50%, #22d3ee 100%);
+    --ok: #34d399;
+    --warn: #ffb454;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { color-scheme: dark; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans);
+         line-height: 1.8; overflow-x: hidden; }
+
+  .field-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .field-bg::before { content: ""; position: absolute; inset: 0;
+    background:
+      linear-gradient(rgba(167,139,250,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(167,139,250,.05) 1px, transparent 1px);
+    background-size: 46px 46px;
+    mask-image: radial-gradient(ellipse 90% 55% at 50% 0%, #000 30%, transparent 75%); }
+  .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .5; }
+  .orb.a { width: 480px; height: 480px; top: -180px; left: -120px;
+           background: radial-gradient(circle, rgba(167,139,250,.34), transparent 65%); }
+  .orb.b { width: 540px; height: 540px; top: -140px; right: -170px;
+           background: radial-gradient(circle, rgba(34,211,238,.26), transparent 65%); }
+  @media (prefers-reduced-motion: no-preference) {
+    .orb.a { animation: drift 17s ease-in-out infinite alternate; }
+    .orb.b { animation: drift 22s ease-in-out infinite alternate-reverse; }
+    @keyframes drift { to { transform: translate(50px, 40px) scale(1.08); } } }
+
+  .wrap { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; padding: 24px 20px 72px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+  .wordmark { display: flex; align-items: center; gap: 11px; font-family: var(--mono);
+              font-weight: 700; font-size: 17px; letter-spacing: .12em; }
+  .wordmark .g { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .logo { display: block; filter: drop-shadow(0 0 8px rgba(167,139,250,.4)); }
+  .pill-beta { font-family: var(--mono); font-size: 11px; letter-spacing: .18em; color: var(--violet);
+               border: 1px solid rgba(167,139,250,.4); border-radius: 99px; padding: 4px 12px;
+               display: flex; align-items: center; gap: 7px; white-space: nowrap; }
+  .pill-beta i { width: 6px; height: 6px; border-radius: 50%; background: var(--violet); }
+  @media (prefers-reduced-motion: no-preference) {
+    .pill-beta i { animation: blink 1.6s ease-in-out infinite; }
+    @keyframes blink { 50% { opacity: .25; } } }
+
+  .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .34em; color: var(--faint); margin: 52px 0 14px; }
+  h1 { font-size: clamp(28px, 5.5vw, 40px); line-height: 1.4; margin: 0 0 14px; font-weight: 600;
+       letter-spacing: .02em; text-wrap: balance; }
+  h1 .g { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lead { color: var(--muted); font-size: 15px; max-width: 36em; margin: 0 0 30px; }
+
+  /* アップローダー */
+  .studio { border: 1px solid var(--line); border-radius: 18px; background: var(--panel);
+            backdrop-filter: blur(8px); overflow: hidden;
+            box-shadow: 0 0 0 1px rgba(10,9,20,.4), 0 24px 80px -32px rgba(167,139,250,.28); }
+  .studio-head { display: flex; align-items: center; gap: 8px; padding: 12px 18px;
+                 border-bottom: 1px solid var(--line); font-family: var(--mono);
+                 font-size: 11px; letter-spacing: .22em; color: var(--faint); }
+  .dots { display: flex; gap: 6px; margin-right: 6px; }
+  .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line-strong); }
+  .studio-body { padding: 26px 24px; }
+  .drop { border: 1.5px dashed var(--line-strong); border-radius: 14px; background: rgba(10,9,20,.5);
+          padding: 40px 20px; text-align: center; cursor: pointer; transition: border-color .2s, background .2s; }
+  .drop:hover, .drop.over { border-color: rgba(167,139,250,.7); background: rgba(167,139,250,.06); }
+  .drop .ic { font-size: 34px; }
+  .drop b { display: block; font-size: 16px; margin: 10px 0 4px; }
+  .drop span { font-size: 12.5px; color: var(--faint); }
+  .drop input { display: none; }
+  .studio-foot { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--faint); margin: 14px 2px 0; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+  .chip { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; color: var(--muted);
+          border: 1px solid var(--line); border-radius: 99px; padding: 5px 14px; }
+
+  /* 処理中 */
+  #working { display: none; margin-top: 20px; }
+  .work { border: 1px solid var(--line); border-radius: 14px; background: rgba(8,7,16,.9);
+          padding: 22px 24px; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  .work .spin { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--line-strong);
+                border-top-color: var(--violet); border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+  @media (prefers-reduced-motion: no-preference) { .work .spin { animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } } }
+
+  /* 結果プレビュー */
+  #result { display: none; margin-top: 22px; }
+  .verdict-bar { display: flex; gap: 12px; align-items: center; border: 1px solid var(--line);
+                 border-radius: 12px; background: var(--panel); padding: 14px 18px; font-size: 13.5px; }
+  .verdict-bar .b { flex: 0 0 auto; font-size: 11px; font-family: var(--mono); letter-spacing: .1em;
+                    padding: 4px 12px; border-radius: 99px; }
+  .verdict-bar.good .b { color: var(--ok); background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.3); }
+  .verdict-bar.warn .b { color: var(--warn); background: rgba(255,180,84,.1); border: 1px solid rgba(255,180,84,.3); }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  @media (max-width: 560px) { .compare { grid-template-columns: 1fr; } }
+  .pane { border: 1px solid var(--line); border-radius: 14px; background: var(--panel); overflow: hidden; }
+  .pane .cap { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; color: var(--faint);
+               padding: 10px 14px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
+  .pane .canvas { aspect-ratio: 1; display: grid; place-content: center; padding: 18px;
+    background: repeating-conic-gradient(#f2f2f6 0% 25%, #e2e2ea 0% 50%) 0 0 / 24px 24px; }
+  .pane .canvas img, .pane .canvas svg { max-width: 100%; max-height: 100%; display: block; }
+
+  .buy { margin-top: 18px; border: 1px solid var(--line-strong); border-radius: 16px;
+         background: linear-gradient(180deg, rgba(167,139,250,.08), rgba(34,211,238,.03)); padding: 22px; }
+  .buy .row { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  .buy .price { font-size: 26px; font-weight: 700; }
+  .buy .price small { font-size: 13px; color: var(--muted); font-weight: 400; }
+  .buy .price .old { text-decoration: line-through; color: var(--faint); font-size: 15px; margin-left: 8px; }
+  .buy ul { list-style: none; padding: 0; margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+  .buy li { font-size: 12.5px; color: var(--muted); font-family: var(--mono); }
+  .buy li b { color: var(--text); }
+  .dl { display: inline-block; padding: 14px 28px; border-radius: 12px; color: #0a0912; font-weight: 700;
+        font-size: 15px; text-decoration: none; border: none; cursor: pointer;
+        background: var(--grad); font-family: var(--sans); transition: filter .15s; white-space: nowrap; }
+  .dl:hover { filter: brightness(1.08); }
+  .buy .pill-free { display: inline-block; margin-top: 12px; font-family: var(--mono); font-size: 11px;
+    letter-spacing: .1em; color: var(--ok); background: rgba(52,211,153,.1);
+    border: 1px solid rgba(52,211,153,.3); border-radius: 99px; padding: 5px 14px; }
+  .again { display: inline-block; margin-top: 16px; color: var(--violet); cursor: pointer; background: none;
+           border: 1px solid var(--line-strong); border-radius: 10px; font-size: 13px; padding: 9px 16px;
+           font-family: var(--mono); letter-spacing: .06em; }
+  button:focus-visible, a:focus-visible, .drop:focus-visible { outline: 2px solid var(--violet); outline-offset: 3px; }
+
+  .errbox { display: none; border: 1px solid rgba(255,120,120,.4); border-radius: 12px;
+            background: rgba(255,92,122,.08); padding: 18px; margin-top: 20px; font-size: 13.5px; }
+  .errbox b { color: #ff8a9a; }
+
+  /* LP セクション(LaunchGuardと共通トーン) */
+  .lp { margin-top: 72px; }
+  .lp-eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .3em; color: var(--faint); margin-bottom: 12px; }
+  .lp h2 { font-size: clamp(22px,4vw,30px); font-weight: 600; margin: 0 0 10px; text-wrap: balance; }
+  .lp h2 .g { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lp .p { color: var(--muted); font-size: 14.5px; max-width: 40em; margin: 0; }
+
+  .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 24px; }
+  @media (max-width: 620px) { .steps { grid-template-columns: 1fr; } }
+  .step { border: 1px solid var(--line); border-radius: 14px; background: var(--panel); padding: 20px; }
+  .step .n { font-family: var(--mono); font-size: 12px; color: var(--violet); letter-spacing: .1em; }
+  .step h3 { font-size: 16px; margin: 8px 0 6px; }
+  .step p { font-size: 13px; color: var(--muted); margin: 0; }
+
+  .formats { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-top: 24px; }
+  @media (max-width: 620px) { .formats { grid-template-columns: 1fr; } }
+  .fmt { display: flex; gap: 12px; align-items: flex-start; border: 1px solid var(--line);
+         border-radius: 12px; background: var(--panel); padding: 15px 16px; }
+  .fmt .ext { font-family: var(--mono); font-weight: 700; color: var(--violet); font-size: 13px;
+              border: 1px solid var(--line-strong); border-radius: 7px; padding: 4px 8px; flex: 0 0 auto; }
+  .fmt b { font-size: 14px; display: block; margin-bottom: 2px; }
+  .fmt span { font-size: 12.5px; color: var(--muted); }
+
+  .plans { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; margin-top: 24px; }
+  @media (max-width: 620px) { .plans { grid-template-columns: 1fr; } }
+  .plan { border: 1px solid var(--line); border-radius: 16px; background: var(--panel); padding: 24px 22px; }
+  .plan.featured { border-color: rgba(167,139,250,.4);
+    box-shadow: 0 0 0 1px rgba(167,139,250,.15), 0 24px 60px -36px rgba(167,139,250,.3); }
+  .plan .tag { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; color: var(--faint); }
+  .plan.featured .tag { color: var(--violet); }
+  .plan .price { font-size: 30px; font-weight: 700; margin: 10px 0 2px; }
+  .plan .price small { font-size: 13px; color: var(--muted); font-weight: 400; }
+  .plan .note { font-size: 12px; color: var(--faint); }
+  .plan ul { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 9px; }
+  .plan li { font-size: 13px; color: var(--text); padding-left: 22px; position: relative; }
+  .plan li::before { content: "✓"; position: absolute; left: 0; color: var(--violet); font-weight: 700; }
+
+  .faq { margin-top: 22px; display: grid; gap: 10px; }
+  .faq details { border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 2px 18px; }
+  .faq summary { cursor: pointer; font-size: 14.5px; font-weight: 600; padding: 14px 0; list-style: none; position: relative; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; position: absolute; right: 0; color: var(--violet); font-size: 18px; }
+  .faq details[open] summary::after { content: "–"; }
+  .faq p { font-size: 13.5px; color: var(--muted); margin: 0 0 16px; }
+
+  .cta-band { margin-top: 64px; text-align: center; border: 1px solid var(--line); border-radius: 18px;
+    background: linear-gradient(180deg, rgba(167,139,250,.06), rgba(34,211,238,.03)); padding: 40px 24px; }
+  .cta-band h2 { font-size: 24px; font-weight: 600; margin: 0 0 8px; }
+  .cta-band p { color: var(--muted); font-size: 14px; margin: 0 0 22px; }
+  .cta-btn { display: inline-block; padding: 15px 32px; border-radius: 12px; color: #0a0912; font-weight: 700;
+    font-size: 15px; border: none; cursor: pointer; background: var(--grad); font-family: var(--sans); }
+  .cta-btn:hover { filter: brightness(1.08); }
+
+  footer { margin-top: 52px; font-size: 12px; color: var(--faint); border-top: 1px solid var(--line); padding-top: 18px; }
+</style>
+</head>
+<body>
+<div class="field-bg"><div class="orb a"></div><div class="orb b"></div></div>
+
+<div class="wrap">
+  <div class="topbar">
+    <div class="wordmark">
+      <svg class="logo" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+        <defs><linearGradient id="vpGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient></defs>
+        <path d="M4 5 L12 3 L20 5 L20 13 C20 18 16 21 12 22 C8 21 4 18 4 13 Z" fill="rgba(167,139,250,.06)" stroke="url(#vpGrad)" stroke-width="1.4"/>
+        <path d="M8 10 L12 16 L16 10" fill="none" stroke="url(#vpGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="12" cy="8" r="1.5" fill="#a78bfa"/>
+      </svg>
+      <span>VECTOR<span class="g">PACK</span></span>
+    </div>
+    <div class="pill-beta"><i></i>FREE BETA</div>
+  </div>
+
+  <section id="top">
+    <div class="eyebrow">AI IMAGE / PRO DELIVERY DATA</div>
+    <h1>AIで作った画像を、<br><span class="g">プロの納品データ</span>に。</h1>
+    <p class="lead">ロゴやイラストのPNGを、映像・印刷にそのまま渡せるベクター(.ai / SVG / PDF)に変換します。<b>Illustratorがなくても大丈夫</b>。拡大しても輪郭がボケない、本物の納品データが手に入ります。</p>
+
+    <div class="studio">
+      <div class="studio-head"><span class="dots"><i></i><i></i><i></i></span>VECTOR STUDIO</div>
+      <div class="studio-body">
+        <div class="drop" id="drop" tabindex="0" role="button" aria-label="画像を選択">
+          <div class="ic">🎨</div>
+          <b>画像をドラッグ、またはクリックして選ぶ</b>
+          <span>PNG / JPG に対応 ・ ロゴやイラスト向き ・ 変換結果は無料で確認できます</span>
+          <input type="file" id="file" accept="image/png,image/jpeg,image/webp">
+        </div>
+        <div class="studio-foot">// 登録不要 ・ 画像は変換のみに使用し保存しません</div>
+      </div>
+    </div>
+
+    <div class="chips">
+      <span class="chip">.ai / SVG / PDF</span>
+      <span class="chip">Illustrator不要</span>
+      <span class="chip">見てから購入</span>
+      <span class="chip">NO SIGNUP</span>
+    </div>
+
+    <section id="working">
+      <div class="work"><span class="spin"></span>ベクター化しています… パスを解析中</div>
+    </section>
+
+    <div class="errbox" id="errbox"><b>変換できませんでした。</b> <span id="errmsg"></span><br>
+      <button class="again" id="errback">← 別の画像を試す</button></div>
+
+    <section id="result">
+      <div class="verdict-bar" id="verdict"><span class="b" id="verdict-b">RESULT</span><span id="verdict-t"></span></div>
+      <div class="compare">
+        <div class="pane"><div class="cap"><span>BEFORE</span><span>元画像(PNG)</span></div><div class="canvas" id="pane-before"></div></div>
+        <div class="pane"><div class="cap"><span>AFTER</span><span>ベクター(SVG)</span></div><div class="canvas" id="pane-after"></div></div>
+      </div>
+      <div class="buy">
+        <div class="row">
+          <div>
+            <div class="price">¥500 <small>/ 1点</small><span class="old">通常</span></div>
+            <ul><li><b>.ai</b>(Illustrator互換)</li><li><b>SVG</b></li><li><b>ベクターPDF</b></li><li><b>元PNG</b></li><li>ZIP一式</li></ul>
+          </div>
+          <button class="dl" id="dl">納品パックをダウンロード</button>
+        </div>
+        <span class="pill-free">β期間は無料 — まずは品質を確かめてください</span>
+      </div>
+      <button class="again" id="again">← 別の画像を変換する</button>
+    </section>
+
+    <!-- ===== 課題 ===== -->
+    <section class="lp">
+      <div class="lp-eyebrow">THE PROBLEM / なぜ必要か</div>
+      <h2>AIが出すのは「画面用」。<br><span class="g">仕事で使えるデータ</span>じゃない。</h2>
+      <p class="p">AIで作ったロゴやイラストはPNG(点の集まり)です。映像編集(After Effects)や印刷の現場では、拡大しても崩れないベクターの.aiデータが標準。でもIllustratorは高価で、持っていない人がほとんど。「作れるのに、納品できない」——この谷を、VectorPackが埋めます。</p>
+    </section>
+
+    <!-- ===== 仕組み ===== -->
+    <section class="lp">
+      <div class="lp-eyebrow">HOW IT WORKS / 3ステップ</div>
+      <h2>画像を入れる。結果を見る。買う。</h2>
+      <div class="steps">
+        <div class="step"><div class="n">STEP 01</div><h3>画像をアップ</h3><p>AIで作ったロゴ・イラストのPNGをドラッグするだけ。登録も設定も不要です。</p></div>
+        <div class="step"><div class="n">STEP 02</div><h3>結果を確認</h3><p>ベクター化した仕上がりをその場でプレビュー。買う前に品質を確かめられます。</p></div>
+        <div class="step"><div class="n">STEP 03</div><h3>納品パックを入手</h3><p>.ai / SVG / PDF / PNG を一式ダウンロード。そのまま映像・印刷に渡せます。</p></div>
+      </div>
+    </section>
+
+    <!-- ===== 中身 ===== -->
+    <section class="lp">
+      <div class="lp-eyebrow">WHAT YOU GET / 納品パックの中身</div>
+      <h2>プロに渡せる、<span class="g">4つの形式</span>を一式で。</h2>
+      <div class="formats">
+        <div class="fmt"><span class="ext">.ai</span><div><b>Illustrator互換</b><span>映像(After Effects)や印刷会社にそのまま渡せる、業界標準の納品形式。</span></div></div>
+        <div class="fmt"><span class="ext">SVG</span><div><b>ベクター</b><span>Figma・Web・アプリで使える。何倍に拡大しても輪郭がシャープ。</span></div></div>
+        <div class="fmt"><span class="ext">PDF</span><div><b>ベクターPDF</b><span>印刷・資料への貼り込みに。ベクターなので高精細に出力できます。</span></div></div>
+        <div class="fmt"><span class="ext">PNG</span><div><b>元画像</b><span>正規化した元データも同梱。用途に合わせて使い分けられます。</span></div></div>
+      </div>
+    </section>
+
+    <!-- ===== 正直さ ===== -->
+    <section class="lp">
+      <div class="lp-eyebrow">HONEST / 正直に言います</div>
+      <h2>向く画像と、<span class="g">向かない画像</span>があります。</h2>
+      <p class="p">ロゴやフラットなイラストは、ほぼ完璧にベクター化できます。一方、写真やグラデーションが濃い画像はベクター化に不向きで、色が簡略化されます。VectorPackは変換前に「この画像は向くか」を自動判定して正直に伝えます。だから<b>無駄に課金させません</b>。しかも、仕上がりを見てから買えます。</p>
+    </section>
+
+    <!-- ===== 料金 ===== -->
+    <section class="lp">
+      <div class="lp-eyebrow">PRICING / 料金</div>
+      <h2><span class="g">見てから</span>買える。だから失敗しない。</h2>
+      <div class="plans">
+        <div class="plan featured">
+          <div class="tag">つど購入</div>
+          <div class="price">¥500<small> / 1点</small></div>
+          <div class="note">納品パックのダウンロード</div>
+          <ul>
+            <li>変換結果は無料でプレビュー</li>
+            <li>納得したら購入してダウンロード</li>
+            <li>.ai / SVG / PDF / PNG の一式</li>
+            <li>商用利用OK</li>
+          </ul>
+        </div>
+        <div class="plan">
+          <div class="tag">クレジット ● まとめ買い</div>
+          <div class="price">お得<small> / 予定</small></div>
+          <div class="note">たくさん納品する人向け</div>
+          <ul>
+            <li>10点・30点などのパック</li>
+            <li>1点あたりが割安に</li>
+            <li>フリーランス・出品者向け</li>
+            <li>β期間はすべて無料</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section class="lp">
+      <div class="lp-eyebrow">FAQ / よくある質問</div>
+      <h2>気になること</h2>
+      <div class="faq">
+        <details><summary>Illustratorを持っていなくても使えますか?</summary><p>はい、それがこのツールの目的です。ブラウザだけで.aiデータが作れます。受け取った映像編集者やデザイナーはIllustrator/After Effectsでそのまま開けます。</p></details>
+        <details><summary>買う前に仕上がりを確認できますか?</summary><p>できます。アップロードすると変換結果をその場でプレビュー表示します。品質に納得してから購入してください。</p></details>
+        <details><summary>写真もベクターにできますか?</summary><p>写真は原理的にベクター化に不向きです。VectorPackは変換前に自動判定して正直にお伝えします。ロゴ・アイコン・フラットなイラストが最も高品質になります。</p></details>
+        <details><summary>アップロードした画像は保存されますか?</summary><p>いいえ。変換のためだけに使い、サーバーには保存しません。</p></details>
+      </div>
+    </section>
+
+    <div class="cta-band">
+      <h2>その画像、納品データにしませんか?</h2>
+      <p>アップして、仕上がりを見るだけなら無料。</p>
+      <button class="cta-btn" id="cta-up">🎨 画像をアップして試す</button>
+    </div>
+  </section>
+
+  <footer>アップロードした画像は変換のためだけに使用し、保存しません。ロゴ・イラスト向けのツールです。</footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const drop = $("drop"), file = $("file");
+  let lastBeforeURL = null;
+
+  function view(name) {
+    $("working").style.display = name === "working" ? "block" : "none";
+    $("result").style.display = name === "result" ? "block" : "none";
+    $("errbox").style.display = name === "error" ? "block" : "none";
+  }
+
+  function pick() { file.click(); }
+  drop.addEventListener("click", pick);
+  drop.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+  ["dragover", "dragenter"].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
+  drop.addEventListener("drop", (e) => { const f = e.dataTransfer.files[0]; if (f) handle(f); });
+  file.addEventListener("change", () => { const f = file.files[0]; if (f) handle(f); });
+  $("cta-up").addEventListener("click", () => { window.scrollTo({ top: 0, behavior: "smooth" }); setTimeout(pick, 400); });
+  $("again").addEventListener("click", reset);
+  $("errback").addEventListener("click", reset);
+
+  function reset() {
+    view("none");
+    if (lastBeforeURL) { URL.revokeObjectURL(lastBeforeURL); lastBeforeURL = null; }
+    file.value = "";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function handle(f) {
+    if (!/^image\//.test(f.type)) { showErr("画像ファイルを選んでください。"); return; }
+    view("working");
+    if (lastBeforeURL) URL.revokeObjectURL(lastBeforeURL);
+    lastBeforeURL = URL.createObjectURL(f);
+    try {
+      const r = await fetch("/api/vectorize", { method: "POST", headers: { "Content-Type": f.type }, body: f });
+      const data = await r.json();
+      if (!r.ok || !data.ok) throw new Error(data.error || ("HTTP " + r.status));
+      render(data);
+    } catch (e) { showErr(String(e.message || e)); }
+  }
+
+  function showErr(msg) { $("errmsg").textContent = msg; view("error"); }
+
+  function render(data) {
+    const vb = $("verdict");
+    vb.className = "verdict-bar " + (data.suitable ? "good" : "warn");
+    $("verdict-b").textContent = data.suitable ? "GOOD" : "CAUTION";
+    $("verdict-t").textContent = data.note;
+
+    const before = $("pane-before"); before.textContent = "";
+    const img = document.createElement("img"); img.src = lastBeforeURL; img.alt = "元画像";
+    before.appendChild(img);
+
+    const after = $("pane-after");
+    // SVGはサニタイズのため<img>のdata URIで表示(スクリプト無効化)
+    after.textContent = "";
+    const svgImg = document.createElement("img");
+    svgImg.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(data.preview_svg);
+    svgImg.alt = "ベクター結果";
+    after.appendChild(svgImg);
+
+    const dl = $("dl");
+    dl.onclick = () => { window.location.href = "/api/download?id=" + encodeURIComponent(data.download_id); };
+
+    view("result");
+    $("result").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+})();
+</script>
+</body>
+</html>
