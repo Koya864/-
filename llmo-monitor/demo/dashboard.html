@@ -1,0 +1,112 @@
+<title>みらい会計事務所 — AI検索(LLMO)ダッシュボード</title>
+<style>
+  :root {
+    --bg:#f5f8f8; --surface:#fff; --surface2:#eef2f1; --ink:#16201f;
+    --soft:#3e4b49; --faint:#6b7a77; --line:#dde4e2; --accent:#0e7c86;
+    --accent-soft:#d6ecec; --good:#2f7d54; --warn:#b5730f; --crit:#b23b3b;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --bg:#0d1413; --surface:#141d1c; --surface2:#1b2625; --ink:#e7edeb;
+    --soft:#b6c2bf; --faint:#7f8f8c; --line:#26332f; --accent:#45b7bd;
+    --accent-soft:#123536; --good:#5fbf87; --warn:#d9a24a; --crit:#e07a7a;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0d1413; --surface:#141d1c; --surface2:#1b2625; --ink:#e7edeb;
+    --soft:#b6c2bf; --faint:#7f8f8c; --line:#26332f; --accent:#45b7bd;
+    --accent-soft:#123536; --good:#5fbf87; --warn:#d9a24a; --crit:#e07a7a;
+  }
+  :root[data-theme="light"]{
+    --bg:#f5f8f8; --surface:#fff; --surface2:#eef2f1; --ink:#16201f;
+    --soft:#3e4b49; --faint:#6b7a77; --line:#dde4e2; --accent:#0e7c86;
+    --accent-soft:#d6ecec; --good:#2f7d54; --warn:#b5730f; --crit:#b23b3b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.6;
+    font-family:-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,
+    "Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 20px 80px}
+  header{padding:40px 0 24px;border-bottom:1px solid var(--line);margin-bottom:28px}
+  .eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--accent);font-weight:700;margin:0 0 8px}
+  h1{font-size:clamp(22px,4vw,30px);margin:0;font-weight:800;letter-spacing:-.01em}
+  .sub{color:var(--faint);font-size:13px;margin-top:8px;display:flex;gap:10px;
+    flex-wrap:wrap;align-items:center}
+  .demo-badge{background:var(--accent-soft);color:var(--accent);font-weight:700;
+    font-size:11px;padding:3px 9px;border-radius:999px;letter-spacing:.04em}
+  h2{font-size:16px;margin:32px 0 14px;font-weight:800;display:flex;
+    align-items:center;gap:8px}
+  h2::before{content:"";width:4px;height:16px;background:var(--accent);
+    border-radius:2px;display:inline-block}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media(max-width:640px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:16px}
+  .kpi-label{font-size:12px;color:var(--faint)}
+  .kpi-val{font-size:28px;font-weight:800;color:var(--accent);
+    font-variant-numeric:tabular-nums;line-height:1.2;margin-top:4px}
+  .delta{font-size:12px;font-weight:700;margin-top:4px;display:inline-block}
+  .delta.up{color:var(--good)} .delta.down{color:var(--crit)}
+  .delta.flat{color:var(--faint)} .muted{color:var(--faint);font-weight:400}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    overflow:hidden}
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  th,td{text-align:left;padding:11px 16px;border-bottom:1px solid var(--line)}
+  th{background:var(--surface2);font-size:12px;font-weight:700;color:var(--soft)}
+  tr:last-child td{border-bottom:none}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+  .bar{background:var(--surface2);border-radius:5px;height:8px;width:120px;
+    overflow:hidden}
+  .bar span{display:block;height:100%;background:var(--accent)}
+  .pill{font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px}
+  .pill.hot{background:#fbe6e0;color:var(--crit)}
+  .pill.ok{background:var(--accent-soft);color:var(--accent)}
+  @media(prefers-color-scheme:dark){.pill.hot{background:#3a2320}}
+  .badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px;
+    background:var(--surface2);color:var(--soft)}
+  .badge.t-comparison{background:var(--accent-soft);color:var(--accent)}
+  .badge.t-review{background:#f6ead2;color:var(--warn)}
+  .task{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px;margin-bottom:12px}
+  .task-h{font-weight:700;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .rank-badge{background:var(--accent);color:#fff;width:22px;height:22px;
+    border-radius:6px;display:grid;place-items:center;font-size:12px;flex:none}
+  .task ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+  .task li{font-size:13.5px;color:var(--soft);padding-left:2px}
+  .atype{font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:4px;
+    margin-right:8px;text-transform:uppercase}
+  .a-content{background:var(--accent-soft);color:var(--accent)}
+  .a-third_party{background:#f6ead2;color:var(--warn)}
+  .a-freshness{background:var(--surface2);color:var(--faint)}
+  footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);
+    font-size:12px;color:var(--faint)}
+</style>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">AI検索 可視化レポート</p>
+    <h1>みらい会計事務所</h1>
+    <div class="sub"><span class="demo-badge">DEMO ACCOUNT</span>
+      <span>計測日 2026-07-10</span>
+      <span>ChatGPT / Gemini / Perplexity / Claude を横断計測</span></div>
+  </header>
+
+  <div class="kpis"><div class="kpi"><div class="kpi-label">AI言及率</div><div class="kpi-val">65%</div><span class="delta up">▲ 25pt <span class="muted">前月比</span></span></div><div class="kpi"><div class="kpi-label">平均掲載順位</div><div class="kpi-val">2.5位</div></div><div class="kpi"><div class="kpi-label">引用元サイト数</div><div class="kpi-val">11</div></div><div class="kpi"><div class="kpi-label">監視クエリ数</div><div class="kpi-val">5</div></div></div>
+
+  <h2>優先ギャップ(競合は出るが自社が出ない質問)</h2>
+  <div class="card"><table>
+    <thead><tr><th>質問</th><th class="num">言及率</th>
+      <th>機会スコア</th><th>状態</th></tr></thead>
+    <tbody><tr><td>創業融資 サポート 税理士 東京</td><td class="num">0%</td><td><div class="bar"><span style="width:100%"></span></div></td><td><span class="pill hot">要対応</span></td></tr><tr><td>東京 税理士 おすすめ</td><td class="num">50%</td><td><div class="bar"><span style="width:50%"></span></div></td><td><span class="pill hot">要対応</span></td></tr><tr><td>確定申告 丸投げ 費用 相場</td><td class="num">75%</td><td><div class="bar"><span style="width:25%"></span></div></td><td><span class="pill hot">要対応</span></td></tr><tr><td>インボイス 対応 税理士 相談</td><td class="num">100%</td><td><div class="bar"><span style="width:0%"></span></div></td><td><span class="pill ok">良好</span></td></tr><tr><td>クラウド会計 導入支援 税理士</td><td class="num">100%</td><td><div class="bar"><span style="width:0%"></span></div></td><td><span class="pill ok">良好</span></td></tr></tbody>
+  </table></div>
+
+  <h2>引用元ターゲット(AIが引用=載るべき場所)</h2>
+  <div class="card"><table>
+    <thead><tr><th>種別</th><th>ドメイン</th><th class="num">引用回数</th></tr></thead>
+    <tbody><tr><td><span class="badge t-other">その他</span></td><td>zeiri4.com</td><td class="num">20</td></tr><tr><td><span class="badge t-media">メディア</span></td><td>note.com</td><td class="num">12</td></tr><tr><td><span class="badge t-comparison">比較</span></td><td>zeirishi-hikaku.jp</td><td class="num">8</td></tr><tr><td><span class="badge t-other">その他</span></td><td>mirai-kaikei.jp</td><td class="num">7</td></tr><tr><td><span class="badge t-media">メディア</span></td><td>prtimes.jp</td><td class="num">4</td></tr><tr><td><span class="badge t-other">その他</span></td><td>nta.go.jp</td><td class="num">4</td></tr><tr><td><span class="badge t-review">レビュー</span></td><td>kuchikomi-zeirishi.jp</td><td class="num">4</td></tr><tr><td><span class="badge t-other">その他</span></td><td>j-net21.smrj.go.jp</td><td class="num">4</td></tr></tbody>
+  </table></div>
+
+  <h2>改善バックログ(優先質問ごとの推奨アクション)</h2>
+  <div class="task"><div class="task-h"><span class="rank-badge">1</span>創業融資 サポート 税理士 東京</div><ul><li><span class="atype a-content">content</span>『創業融資 サポート 税理士 東京』に結論先出し(冒頭200語で回答)のFAQ型記事を作成し、表・箇条書きで構造化。独自の統計・出典を入れる。</li><li><span class="atype a-third_party">third_party</span>AIが引用している zeiri4.com(other)への掲載・レビュー獲得を狙う。</li><li><span class="atype a-freshness">freshness</span>関連記事は約3ヶ月ごとに更新し鮮度を保つ。</li></ul></div><div class="task"><div class="task-h"><span class="rank-badge">2</span>東京 税理士 おすすめ</div><ul><li><span class="atype a-content">content</span>『東京 税理士 おすすめ』に結論先出し(冒頭200語で回答)のFAQ型記事を作成し、表・箇条書きで構造化。独自の統計・出典を入れる。</li><li><span class="atype a-third_party">third_party</span>AIが引用している zeiri4.com(other)への掲載・レビュー獲得を狙う。</li><li><span class="atype a-freshness">freshness</span>関連記事は約3ヶ月ごとに更新し鮮度を保つ。</li></ul></div><div class="task"><div class="task-h"><span class="rank-badge">3</span>確定申告 丸投げ 費用 相場</div><ul><li><span class="atype a-content">content</span>『確定申告 丸投げ 費用 相場』に結論先出し(冒頭200語で回答)のFAQ型記事を作成し、表・箇条書きで構造化。独自の統計・出典を入れる。</li><li><span class="atype a-third_party">third_party</span>AIが引用している zeiri4.com(other)への掲載・レビュー獲得を狙う。</li><li><span class="atype a-freshness">freshness</span>関連記事は約3ヶ月ごとに更新し鮮度を保つ。</li></ul></div>
+
+  <footer>本ダッシュボードはデモ用の作り込みデータです。実データでは各AIへの
+  実計測結果が入ります。改善アクションはたたき台であり、最終判断は担当者が行います。</footer>
+</div>

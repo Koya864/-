@@ -81,6 +81,8 @@ def init(path=DB_PATH):
 def _domain(url):
     try:
         netloc = urlparse(url).netloc.lower()
+        if not netloc:  # スキーム無し(例: "zeiri4.com/foo")でも拾えるように
+            netloc = url.lower().split("/")[0]
         return netloc[4:] if netloc.startswith("www.") else netloc
     except Exception:
         return ""

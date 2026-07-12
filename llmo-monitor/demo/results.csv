@@ -1,0 +1,41 @@
+timestamp,engine,query,run,mentioned,rank,share_of_voice,competitors_seen,sources
+2026-06-10T09:00:00+00:00,openai,東京 税理士 おすすめ,1,False,0,0.0,税理士法人ABC|スマート会計,zeiri4.com|zeirishi-hikaku.jp|google.com|note.com
+2026-06-10T09:00:00+00:00,perplexity,東京 税理士 おすすめ,1,False,0,0.0,税理士法人ABC|スマート会計,zeiri4.com|zeirishi-hikaku.jp|google.com|note.com
+2026-06-10T09:00:00+00:00,gemini,東京 税理士 おすすめ,1,False,0,0.0,税理士法人ABC|スマート会計,zeiri4.com|zeirishi-hikaku.jp|google.com|note.com
+2026-06-10T09:00:00+00:00,anthropic,東京 税理士 おすすめ,1,False,0,0.0,税理士法人ABC|スマート会計,zeiri4.com|zeirishi-hikaku.jp|google.com|note.com
+2026-06-10T09:00:00+00:00,openai,クラウド会計 導入支援 税理士,1,True,3,0.2,税理士法人ABC|スマート会計,boxil.jp|zeiri4.com|freee.co.jp|note.com
+2026-06-10T09:00:00+00:00,perplexity,クラウド会計 導入支援 税理士,1,True,2,0.3,税理士法人ABC|スマート会計,mirai-kaikei.jp|boxil.jp|zeiri4.com|freee.co.jp|note.com
+2026-06-10T09:00:00+00:00,gemini,クラウド会計 導入支援 税理士,1,False,0,0.0,税理士法人ABC|スマート会計,boxil.jp|zeiri4.com|freee.co.jp|note.com
+2026-06-10T09:00:00+00:00,anthropic,クラウド会計 導入支援 税理士,1,True,3,0.2,税理士法人ABC|スマート会計,boxil.jp|zeiri4.com|freee.co.jp|note.com
+2026-06-10T09:00:00+00:00,openai,創業融資 サポート 税理士 東京,1,False,0,0.0,税理士法人ABC|スマート会計,zeiri4.com|j-net21.smrj.go.jp|prtimes.jp
+2026-06-10T09:00:00+00:00,perplexity,創業融資 サポート 税理士 東京,1,False,0,0.0,税理士法人ABC|スマート会計,zeiri4.com|j-net21.smrj.go.jp|prtimes.jp
+2026-06-10T09:00:00+00:00,gemini,創業融資 サポート 税理士 東京,1,False,0,0.0,税理士法人ABC|スマート会計,zeiri4.com|j-net21.smrj.go.jp|prtimes.jp
+2026-06-10T09:00:00+00:00,anthropic,創業融資 サポート 税理士 東京,1,False,0,0.0,税理士法人ABC|スマート会計,zeiri4.com|j-net21.smrj.go.jp|prtimes.jp
+2026-06-10T09:00:00+00:00,openai,確定申告 丸投げ 費用 相場,1,False,0,0.0,税理士法人ABC|スマート会計,zeirishi-hikaku.jp|kuchikomi-zeirishi.jp|zeiri4.com
+2026-06-10T09:00:00+00:00,perplexity,確定申告 丸投げ 費用 相場,1,True,4,0.1,税理士法人ABC|スマート会計,zeirishi-hikaku.jp|kuchikomi-zeirishi.jp|zeiri4.com
+2026-06-10T09:00:00+00:00,gemini,確定申告 丸投げ 費用 相場,1,False,0,0.0,税理士法人ABC|スマート会計,zeirishi-hikaku.jp|kuchikomi-zeirishi.jp|zeiri4.com
+2026-06-10T09:00:00+00:00,anthropic,確定申告 丸投げ 費用 相場,1,False,0,0.0,税理士法人ABC|スマート会計,zeirishi-hikaku.jp|kuchikomi-zeirishi.jp|zeiri4.com
+2026-06-10T09:00:00+00:00,openai,インボイス 対応 税理士 相談,1,True,2,0.3,税理士法人ABC|スマート会計,mirai-kaikei.jp|zeiri4.com|note.com|nta.go.jp
+2026-06-10T09:00:00+00:00,perplexity,インボイス 対応 税理士 相談,1,True,1,0.4,税理士法人ABC|スマート会計,mirai-kaikei.jp|zeiri4.com|note.com|nta.go.jp
+2026-06-10T09:00:00+00:00,gemini,インボイス 対応 税理士 相談,1,True,2,0.3,税理士法人ABC|スマート会計,mirai-kaikei.jp|zeiri4.com|note.com|nta.go.jp
+2026-06-10T09:00:00+00:00,anthropic,インボイス 対応 税理士 相談,1,True,1,0.4,税理士法人ABC|スマート会計,mirai-kaikei.jp|zeiri4.com|note.com|nta.go.jp
+2026-07-10T09:00:00+00:00,openai,東京 税理士 おすすめ,1,False,0,0.0,税理士法人ABC|スマート会計,zeiri4.com|zeirishi-hikaku.jp|google.com|note.com
+2026-07-10T09:00:00+00:00,perplexity,東京 税理士 おすすめ,1,True,4,0.1,税理士法人ABC|スマート会計,zeiri4.com|zeirishi-hikaku.jp|google.com|note.com
+2026-07-10T09:00:00+00:00,gemini,東京 税理士 おすすめ,1,False,0,0.0,税理士法人ABC|スマート会計,zeiri4.com|zeirishi-hikaku.jp|google.com|note.com
+2026-07-10T09:00:00+00:00,anthropic,東京 税理士 おすすめ,1,True,3,0.2,税理士法人ABC|スマート会計,zeiri4.com|zeirishi-hikaku.jp|google.com|note.com
+2026-07-10T09:00:00+00:00,openai,クラウド会計 導入支援 税理士,1,True,2,0.3,税理士法人ABC|スマート会計,mirai-kaikei.jp|boxil.jp|zeiri4.com|freee.co.jp|note.com
+2026-07-10T09:00:00+00:00,perplexity,クラウド会計 導入支援 税理士,1,True,2,0.3,税理士法人ABC|スマート会計,mirai-kaikei.jp|boxil.jp|zeiri4.com|freee.co.jp|note.com
+2026-07-10T09:00:00+00:00,gemini,クラウド会計 導入支援 税理士,1,True,3,0.2,税理士法人ABC|スマート会計,boxil.jp|zeiri4.com|freee.co.jp|note.com
+2026-07-10T09:00:00+00:00,anthropic,クラウド会計 導入支援 税理士,1,True,2,0.3,税理士法人ABC|スマート会計,mirai-kaikei.jp|boxil.jp|zeiri4.com|freee.co.jp|note.com
+2026-07-10T09:00:00+00:00,openai,創業融資 サポート 税理士 東京,1,False,0,0.0,税理士法人ABC|スマート会計,zeiri4.com|j-net21.smrj.go.jp|prtimes.jp
+2026-07-10T09:00:00+00:00,perplexity,創業融資 サポート 税理士 東京,1,False,0,0.0,税理士法人ABC|スマート会計,zeiri4.com|j-net21.smrj.go.jp|prtimes.jp
+2026-07-10T09:00:00+00:00,gemini,創業融資 サポート 税理士 東京,1,False,0,0.0,税理士法人ABC|スマート会計,zeiri4.com|j-net21.smrj.go.jp|prtimes.jp
+2026-07-10T09:00:00+00:00,anthropic,創業融資 サポート 税理士 東京,1,False,0,0.0,税理士法人ABC|スマート会計,zeiri4.com|j-net21.smrj.go.jp|prtimes.jp
+2026-07-10T09:00:00+00:00,openai,確定申告 丸投げ 費用 相場,1,True,5,0.0,税理士法人ABC|スマート会計,zeirishi-hikaku.jp|kuchikomi-zeirishi.jp|zeiri4.com
+2026-07-10T09:00:00+00:00,perplexity,確定申告 丸投げ 費用 相場,1,True,3,0.2,税理士法人ABC|スマート会計,zeirishi-hikaku.jp|kuchikomi-zeirishi.jp|zeiri4.com
+2026-07-10T09:00:00+00:00,gemini,確定申告 丸投げ 費用 相場,1,False,0,0.0,税理士法人ABC|スマート会計,zeirishi-hikaku.jp|kuchikomi-zeirishi.jp|zeiri4.com
+2026-07-10T09:00:00+00:00,anthropic,確定申告 丸投げ 費用 相場,1,True,4,0.1,税理士法人ABC|スマート会計,zeirishi-hikaku.jp|kuchikomi-zeirishi.jp|zeiri4.com
+2026-07-10T09:00:00+00:00,openai,インボイス 対応 税理士 相談,1,True,1,0.4,税理士法人ABC|スマート会計,mirai-kaikei.jp|zeiri4.com|note.com|nta.go.jp
+2026-07-10T09:00:00+00:00,perplexity,インボイス 対応 税理士 相談,1,True,1,0.4,税理士法人ABC|スマート会計,mirai-kaikei.jp|zeiri4.com|note.com|nta.go.jp
+2026-07-10T09:00:00+00:00,gemini,インボイス 対応 税理士 相談,1,True,2,0.3,税理士法人ABC|スマート会計,mirai-kaikei.jp|zeiri4.com|note.com|nta.go.jp
+2026-07-10T09:00:00+00:00,anthropic,インボイス 対応 税理士 相談,1,True,1,0.4,税理士法人ABC|スマート会計,mirai-kaikei.jp|zeiri4.com|note.com|nta.go.jp
