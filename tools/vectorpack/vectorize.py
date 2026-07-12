@@ -56,11 +56,13 @@ def png_to_svg(src: Path, dst: Path, monochrome: bool = False):
     """
     import vtracer
     if monochrome:
+        # 白黒ロゴ: 極細の線(外周円など)を綺麗に出すため、呼び出し側で
+        # 2倍に高解像度化した画像を渡す前提。filter_speckle=1で細部を保つ。
         vtracer.convert_image_to_svg_py(
             str(src), str(dst),
             colormode="binary", mode="spline",
-            filter_speckle=2, corner_threshold=55,
-            length_threshold=3.5, splice_threshold=45, path_precision=4,
+            filter_speckle=1, corner_threshold=60,
+            length_threshold=3.0, splice_threshold=45, path_precision=5,
         )
     else:
         vtracer.convert_image_to_svg_py(
@@ -79,12 +81,10 @@ def png_to_svg(src: Path, dst: Path, monochrome: bool = False):
 
 
 def svg_to_pdf(svg: Path, pdf: Path):
-    from reportlab.graphics import renderPDF
-    from svglib.svglib import svg2rlg
-    drawing = svg2rlg(str(svg))
-    if drawing is None:
-        raise RuntimeError("SVGの読み込みに失敗しました")
-    renderPDF.drawToFile(drawing, str(pdf))
+    # cairosvg は塗りの穴やfill-ruleを忠実に扱う(svglibは複雑なトレースSVGで
+    # 描画が崩れるため使わない)。この PDF が Illustrator互換の .ai の中身になる。
+    import cairosvg
+    cairosvg.svg2pdf(url=str(svg), write_to=str(pdf))
 
 
 def make_pack(input_path: Path, out_dir: Path) -> Path:
@@ -103,15 +103,21 @@ def make_pack(input_path: Path, out_dir: Path) -> Path:
         rgba = img.convert("RGBA")
         bg.paste(rgba, mask=rgba.split()[3])
         bg.save(normalized)
+        # 極細の線を綺麗にトレースするため、2倍に高解像度化した画像でトレースする
+        trace_src = out_dir / f"{name}-trace.png"
+        bg.resize((bg.width * 2, bg.height * 2), Image.LANCZOS).save(trace_src)
     else:
         img.convert("RGBA").save(normalized)
+        trace_src = normalized
 
     svg = out_dir / f"{name}.svg"
     pdf = out_dir / f"{name}.pdf"
     ai = out_dir / f"{name}.ai"
 
     print("[1/3] ベクター化(PNG → SVG)…")
-    png_to_svg(normalized, svg, monochrome=mono)
+    png_to_svg(trace_src, svg, monochrome=mono)
+    if mono and trace_src.exists():
+        trace_src.unlink()  # 中間ファイルは削除
 
     print("[2/3] ベクターPDFを生成(SVG → PDF)…")
     svg_to_pdf(svg, pdf)
