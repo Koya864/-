@@ -1,0 +1,4 @@
+# 実データ・出力はコミットしない
+config.json
+results.csv
+*.csv

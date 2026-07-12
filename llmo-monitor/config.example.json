@@ -1,0 +1,19 @@
+{
+  "target": {
+    "name": "あなたの会社名",
+    "aliases": ["English Name", "略称"]
+  },
+  "competitors": ["競合A", "競合B", "競合C"],
+  "queries": [
+    "東京 税理士 おすすめ",
+    "クラウド会計ソフト 比較 中小企業",
+    "確定申告 代行 サービス どこがいい"
+  ],
+  "engines": ["openai", "perplexity", "gemini", "anthropic"],
+  "runs_per_query": 2,
+
+  "openai_model": "gpt-4o",
+  "perplexity_model": "sonar",
+  "gemini_model": "gemini-2.5-flash",
+  "anthropic_model": "claude-opus-4-8"
+}
