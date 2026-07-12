@@ -49,7 +49,8 @@ def extract_images(page) -> list:
 def check_pdf(path: Path, quiet: bool = False) -> dict:
     """診断して結果dictを返す。"""
     pdf = pikepdf.open(path)
-    report = {"path": str(path), "pages": [], "verdict_ok": True}
+    report = {"path": str(path), "pages": [], "verdict_ok": True,
+              "low_dpi": False, "rgb_only": False}
 
     for i, page in enumerate(pdf.pages, 1):
         box = [float(x) for x in page.mediabox]
@@ -72,7 +73,11 @@ def check_pdf(path: Path, quiet: bool = False) -> dict:
                 "name": name, "px": (img.width, img.height),
                 "mode": img.mode, "effective_dpi": eff_dpi,
             })
-            if eff_dpi < OK_DPI or img.mode not in ("CMYK",):
+            if eff_dpi < OK_DPI:
+                report["low_dpi"] = True
+                report["verdict_ok"] = False
+            if img.mode != "CMYK":
+                report["rgb_only"] = True
                 report["verdict_ok"] = False
         if not page_info["images"]:
             page_info["note"] = "ラスター画像なし(テキスト/ベクターのみ。解像度の心配は不要)"
@@ -105,8 +110,14 @@ def print_report(report: dict):
             color = "CMYK(印刷用)" if im["mode"] == "CMYK" else f"{im['mode']}(画面用の色。印刷でくすむことがあります)"
             print(f"  画像 {im['name']}: {im['px'][0]}×{im['px'][1]}px → 実効 {dpi}dpi: {grade}")
             print(f"    色モード: {color}")
-    print("\n判定:", "このまま入稿できます" if report["verdict_ok"]
-          else "このまま印刷すると品質が落ちます → `fix` で入稿用に変換できます")
+    if report["verdict_ok"]:
+        verdict = "このまま入稿できます"
+    elif report["low_dpi"]:
+        verdict = "このまま印刷すると荒れます → `fix` で入稿用に変換できます"
+    else:  # 解像度は足りていて色だけRGB
+        verdict = ("解像度は印刷品質です。ただし色がRGBのため、印刷所によっては"
+                   "色味が変わる(鮮やかな色がくすむ)ことがあります → `fix` でCMYK化できます")
+    print("\n判定:", verdict)
 
 
 def fix_pdf(path: Path, out: Path):
